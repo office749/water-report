@@ -1,13 +1,3 @@
-# Llewellyn Plumbing water-report - Netlify config
-#
-# Pure static site. No build step. index.html lives at the repo root,
-# so we intentionally do NOT define a [build] section - Netlify will
-# publish from the repo root automatically.
-#
-# If you ever need to override this, set publish to an explicit
-# relative path like "./" or "site/" - do NOT leave an empty `command`
-# in a [build] block, that confuses Netlify's deploy pipeline.
-
 [[headers]]
   for = "/*"
   [headers.values]
