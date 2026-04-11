@@ -90,33 +90,84 @@ async function callClaude({ systemPrompt, userPrompt, images = [], maxTokens = 8
 
 /**
  * Call Claude and attempt to parse the response as JSON.
- * Tolerates markdown fencing around the JSON.
+ *
+ * Claude will occasionally add preamble ("Here is the JSON:"), markdown
+ * code fences, a postamble ("Let me know if you need anything..."),
+ * or trailing commas. This function tries a ladder of progressively
+ * more aggressive clean-ups until one parses.
  */
 async function callClaudeJSON(opts) {
   const text = await callClaude(opts);
-  const jsonText = extractJson(text);
-  try {
-    return JSON.parse(jsonText);
-  } catch (err) {
-    console.error("Failed to parse JSON from model", text);
-    throw new Error("Model returned content that was not valid JSON. Try again.");
+
+  // Strategy 1: raw parse (ideal case)
+  // Strategy 2: trim + strip fences
+  // Strategy 3: slice between first { and last }
+  // Strategy 4: same as 3 but also strip trailing commas
+  const strategies = [
+    () => JSON.parse(String(text).trim()),
+    () => JSON.parse(stripFences(String(text).trim())),
+    () => {
+      const sliced = sliceOutermostJson(stripFences(String(text)));
+      if (!sliced) throw new Error("no JSON object found in response");
+      return JSON.parse(sliced);
+    },
+    () => {
+      const sliced = sliceOutermostJson(stripFences(String(text)));
+      if (!sliced) throw new Error("no JSON object found in response");
+      return JSON.parse(stripTrailingCommas(sliced));
+    },
+  ];
+
+  let lastErr;
+  for (const strategy of strategies) {
+    try {
+      return strategy();
+    } catch (err) {
+      lastErr = err;
+    }
   }
+
+  console.error("---- Could not parse JSON from model ----");
+  console.error("Raw response:", text);
+  console.error("Last parse error:", lastErr && lastErr.message);
+
+  const preview = String(text).slice(0, 200).replace(/\s+/g, " ");
+  throw new Error(
+    "Model returned content that could not be parsed as JSON. " +
+    "Try again. Response started with: " + preview
+  );
 }
 
-function extractJson(text) {
-  if (!text) return "{}";
-  let t = text.trim();
-  // strip ```json ... ``` fences
-  if (t.startsWith("```")) {
-    t = t.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "");
-  }
-  // Grab the first {...} block to be safe
-  const first = t.indexOf("{");
-  const last = t.lastIndexOf("}");
-  if (first !== -1 && last !== -1 && last > first) {
-    t = t.slice(first, last + 1);
-  }
-  return t.trim();
+/** Remove ```json / ``` fences anywhere in the text. */
+function stripFences(text) {
+  if (!text) return "";
+  return String(text)
+    .replace(/```(?:json|JSON)\s*/g, "")
+    .replace(/```\s*/g, "")
+    .trim();
+}
+
+/**
+ * Find the outermost balanced {...} block in the text and return it.
+ * This handles models that wrap their JSON in preamble/postamble like:
+ *   "Here is the JSON you requested:\n{...}\nLet me know if..."
+ * Returns null if no {...} block is present.
+ */
+function sliceOutermostJson(text) {
+  if (!text) return null;
+  const first = text.indexOf("{");
+  const last = text.lastIndexOf("}");
+  if (first === -1 || last === -1 || last <= first) return null;
+  return text.slice(first, last + 1).trim();
+}
+
+/**
+ * Remove trailing commas before } or ] - a common JSON mistake from LLMs.
+ * This is a naive regex but safe enough for our use case since we only
+ * apply it as a last-ditch fallback.
+ */
+function stripTrailingCommas(jsonText) {
+  return jsonText.replace(/,(\s*[}\]])/g, "$1");
 }
 
 /**

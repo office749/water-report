@@ -29,7 +29,7 @@ function priceBar(regular, final) {
 function pageHeader(title) {
   return `
     <div class="page-header">
-      <img src="assets/logo.svg" alt="Llewellyn Plumbing" onerror="this.src='assets/logo.png'" />
+      <img src="assets/logo.svg" alt="Llewellyn Plumbing" />
       <div class="page-title">${escapeHtml(title)}</div>
     </div>
   `;
@@ -49,7 +49,7 @@ function renderCover(ctx, sizing) {
   return `
   <div class="report-page cover">
     <div class="cover-inner">
-      <img src="assets/logo.svg" alt="Llewellyn Plumbing" class="cover-logo" onerror="this.src='assets/logo.png'" />
+      <img src="assets/logo.svg" alt="Llewellyn Plumbing" class="cover-logo" />
       <h1 class="cover-title">Home Water Quality<br/>Assessment</h1>
       <div class="cover-subtitle">Personalized findings &amp; recommendations</div>
       <div class="cover-divider"></div>
