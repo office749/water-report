@@ -29,8 +29,24 @@ function getProductPrice(product, sizeK) {
   return product.prices[sizeK] || product.startingAt;
 }
 
-function applyDiscount(regular) {
-  return regular - COMPANY.discount;
+/**
+ * Prices stored in data.js (PRODUCTS.prices, BUNDLE.price, ADDONS.startingAt)
+ * are the customer-facing FINAL installed prices. Everywhere a price is
+ * shown in the report or the form preview, we display the final price
+ * next to a "regular" price that is final + COMPANY.discount, so the
+ * customer sees a clean "$X was, $Y now, $DISCOUNT off" story.
+ *
+ * A single COMPANY.discount knob drives every crossed-out price in the
+ * whole app - change that one number and the regular prices everywhere
+ * update together.
+ */
+function withDiscount(finalPrice) {
+  const save = COMPANY.discount;
+  return {
+    final: finalPrice,
+    regular: finalPrice + save,
+    save,
+  };
 }
 
 function formatMoney(n) {
@@ -38,7 +54,7 @@ function formatMoney(n) {
 }
 
 /**
- * Returns { grainsNeeded, sizes: {proMax, blend, ultima}, prices: {proMax:{regular, final, sizeK}, ...}, bundle: {regular, final} }
+ * Returns { grainsNeeded, systems: {proMax|blend|ultima: {sizeK, final, regular, save}}, bundle: {final, regular, save} }
  */
 function calcAllSizing(people, hardness) {
   const grainsNeeded = calcGrainsNeeded(people, hardness);
@@ -47,14 +63,10 @@ function calcAllSizing(people, hardness) {
   for (const key of ["proMax", "blend", "ultima"]) {
     const p = PRODUCTS[key];
     const sizeK = pickSizeForProduct(grainsNeeded, p);
-    const regular = getProductPrice(p, sizeK);
-    const final = applyDiscount(regular);
-    result.systems[key] = { sizeK, regular, final };
+    const finalPrice = getProductPrice(p, sizeK);
+    result.systems[key] = { sizeK, ...withDiscount(finalPrice) };
   }
-  result.bundle = {
-    regular: BUNDLE.regularPrice,
-    final: BUNDLE.price,
-  };
+  result.bundle = withDiscount(BUNDLE.price);
   return result;
 }
 

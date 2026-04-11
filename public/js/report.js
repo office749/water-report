@@ -17,11 +17,31 @@ function todayFormatted() {
   return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
 
+function renderAddonCard(addon) {
+  const finalPrice = addon.startingAt;
+  const regular = finalPrice + COMPANY.discount;
+  const save = COMPANY.discount;
+  return `
+    <div class="addon-card">
+      <h4>${escapeHtml(addon.name)}</h4>
+      <p>${escapeHtml(addon.blurb)}</p>
+      <div class="price-row">
+        <span class="price-strike">$${regular.toLocaleString()}</span>
+        <span class="price-final">$${finalPrice.toLocaleString()}</span>
+        <span class="save-badge">$${save} off</span>
+      </div>
+      <small style="color:#718096;font-size:10px;display:block;margin-top:4px;">starting at &middot; installed</small>
+    </div>
+  `;
+}
+
 function priceBar(regular, final) {
+  const save = Math.max(0, regular - final);
   return `
     <div class="price-row">
       <span class="price-strike">$${regular.toLocaleString()}</span>
       <span class="price-final">$${final.toLocaleString()}</span>
+      ${save > 0 ? `<span class="save-badge">$${save.toLocaleString()} off</span>` : ""}
     </div>
   `;
 }
@@ -86,7 +106,7 @@ function renderCover(ctx, sizing) {
       </div>
 
       <div class="cover-footer">
-        <div class="cover-discount">$100 off already included</div>
+        <div class="cover-discount">$${COMPANY.discount} off already included</div>
         <div class="cover-phone">${escapeHtml(COMPANY.phone)}</div>
         <div class="cover-tagline">Spanish Fork, UT &middot; Utah County &middot; Salt Lake County &middot; Summit County</div>
       </div>
@@ -278,7 +298,7 @@ function renderSystemPage(ctx, content, productKey, sizing, pageNum, eyebrow) {
       </div>
 
       <div class="system-price-bar">
-        <div class="size-note">Your price &middot; <strong>${sz.sizeK}K grain installed</strong><br/><small>$100 off already included</small></div>
+        <div class="size-note">Your price &middot; <strong>${sz.sizeK}K grain installed</strong><br/><small>$${sz.save} off already included</small></div>
         ${priceBar(sz.regular, sz.final)}
       </div>
     </div>
@@ -308,10 +328,11 @@ function renderBundlePage(ctx, content, sizing) {
       <h2>${escapeHtml(BUNDLE.name)}</h2>
       <div class="tag">${escapeHtml(BUNDLE.tagline)}</div>
       <div class="price-line">
-        <span class="price-strike">$${BUNDLE.regularPrice.toLocaleString()}</span>
-        <span class="price-final">$${BUNDLE.price.toLocaleString()}</span>
-        <span class="save">You save $${BUNDLE.youSave}</span>
+        <span class="price-strike">$${sizing.bundle.regular.toLocaleString()}</span>
+        <span class="price-final">$${sizing.bundle.final.toLocaleString()}</span>
+        <span class="save-badge">$${sizing.bundle.save.toLocaleString()} off</span>
       </div>
+      <div class="bundle-extra-save">Plus $${BUNDLE.youSave.toLocaleString()} in extras when compared to buying each piece separately</div>
     </div>
 
     <div class="section">
@@ -352,24 +373,8 @@ function renderPage9(ctx, content) {
       <h3>Optional add-ons</h3>
       <p class="page-lead">${escapeHtml(p.addOnsIntro || "")}</p>
       <div class="addon-grid">
-        <div class="addon-card">
-          <h4>${escapeHtml(ADDONS.ozone.name)}</h4>
-          <p>${escapeHtml(ADDONS.ozone.blurb)}</p>
-          <div class="price-row">
-            <span class="price-strike">$${ADDONS.ozone.regular.toLocaleString()}</span>
-            <span class="price-final">$${ADDONS.ozone.startingAt.toLocaleString()}</span>
-            <small style="color:#718096;font-size:10px;">starting at &middot; installed</small>
-          </div>
-        </div>
-        <div class="addon-card">
-          <h4>${escapeHtml(ADDONS.ro.name)}</h4>
-          <p>${escapeHtml(ADDONS.ro.blurb)}</p>
-          <div class="price-row">
-            <span class="price-strike">$${ADDONS.ro.regular.toLocaleString()}</span>
-            <span class="price-final">$${ADDONS.ro.startingAt.toLocaleString()}</span>
-            <small style="color:#718096;font-size:10px;">starting at &middot; installed</small>
-          </div>
-        </div>
+        ${renderAddonCard(ADDONS.ozone)}
+        ${renderAddonCard(ADDONS.ro)}
       </div>
     </div>
 

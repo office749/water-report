@@ -7,7 +7,9 @@ const COMPANY = {
   city: "Spanish Fork, Utah",
   phone: "(801) 899-9431",
   serviceArea: ["Utah County", "Salt Lake County", "Summit County"],
-  discount: 100,
+  // Dollars off the "regular" price displayed next to every final
+  // price in the report. See public/js/sizing.js -> withDiscount().
+  discount: 200,
 };
 
 // ---------- ZIP code hardness table (Utah) ----------
@@ -55,8 +57,9 @@ const US_AVG_HARDNESS = 10;
 // ---------- Sizes (grain) in order ----------
 const SIZES = [48, 56, 64, 70, 96];
 
-// ---------- Product pricing (pre-discount regular price, by size in thousands of grains) ----------
-// Note: report shows price - $100 discount.
+// ---------- Product pricing (customer-facing FINAL installed prices, by size in thousands of grains) ----------
+// The "regular" crossed-out price shown in the report is computed as
+// price + COMPANY.discount. See public/js/sizing.js -> withDiscount().
 const PRODUCTS = {
   proMax: {
     key: "proMax",
@@ -147,8 +150,8 @@ const PRODUCTS = {
 const BUNDLE = {
   name: "Grand Slam Bundle",
   tagline: "Our most popular package - the Ultima + free upgrades.",
-  price: 3299, // bundle price AFTER discount logic (we still show regular vs final)
-  regularPrice: 3399, // show $100 off
+  price: 3299, // customer-facing final installed price
+  regularPrice: 3499, // price + COMPANY.discount ($200 off)
   includes: [
     { name: "Titan VI Ultima whole-home system", value: 2900, free: false },
     { name: "Reverse Osmosis drinking water system", value: 650, free: true },
@@ -164,13 +167,13 @@ const ADDONS = {
   ozone: {
     name: "Titan UF Ozone System",
     startingAt: 2400,
-    regular: 2500,
+    regular: 2600, // startingAt + COMPANY.discount ($200 off)
     blurb: "Adds ozone disinfection and 0.01-micron ultrafiltration. Eliminates bacteria, viruses and pathogens from your home water - the ultimate well or rural peace-of-mind add-on.",
   },
   ro: {
     name: "Reverse Osmosis Drinking Water",
     startingAt: 650,
-    regular: 750,
+    regular: 850, // startingAt + COMPANY.discount ($200 off)
     blurb: "Under-sink drinking water system. Removes 99% of TDS, lead, fluoride, nitrates and pharmaceuticals for clean drinking water straight from the tap.",
   },
 };

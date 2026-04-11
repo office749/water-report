@@ -75,15 +75,17 @@ function updateLivePreview() {
   document.getElementById("sizingMath").textContent =
     `${people} × 75 gal/day × ${hardness} GPG × 7 days = ${sizing.grainsNeeded.toLocaleString()} grains/week needed`;
 
-  const setCard = (key, sizeEl, regEl, finEl) => {
-    const sz = sizing.systems[key];
-    document.getElementById(sizeEl).textContent = `${sz.sizeK}K grain · installed`;
+  const setCard = (sz, sizeEl, regEl, finEl, saveEl) => {
+    if (sizeEl) document.getElementById(sizeEl).textContent = `${sz.sizeK}K grain · installed`;
     document.getElementById(regEl).textContent = formatMoney(sz.regular);
     document.getElementById(finEl).textContent = formatMoney(sz.final);
+    document.getElementById(saveEl).textContent = `$${sz.save} off`;
   };
-  setCard("proMax", "promaxSize", "promaxRegular", "promaxPrice");
-  setCard("blend", "blendSize", "blendRegular", "blendPrice");
-  setCard("ultima", "ultimaSize", "ultimaRegular", "ultimaPrice");
+  setCard(sizing.systems.proMax, "promaxSize", "promaxRegular", "promaxPrice", "promaxSave");
+  setCard(sizing.systems.blend,  "blendSize",  "blendRegular",  "blendPrice",  "blendSave");
+  setCard(sizing.systems.ultima, "ultimaSize", "ultimaRegular", "ultimaPrice", "ultimaSave");
+  // Bundle card (no sizeK)
+  setCard(sizing.bundle, null, "bundleRegular", "bundlePrice", "bundleSave");
 }
 
 // ---------- Generate report ----------

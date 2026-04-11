@@ -130,7 +130,7 @@ JSON SCHEMA TO RETURN (return exactly this structure, fields filled in):
       "Another short fact.",
       "Another short fact."
     ],
-    "callToAction": "2-3 sentence closing addressed to ${customerName} inviting them to call ${COMPANY.phone} to schedule or ask questions, reminding them about the $100 off already built into these prices."
+    "callToAction": "2-3 sentence closing addressed to ${customerName} inviting them to call ${COMPANY.phone} to schedule or ask questions, reminding them about the $${COMPANY.discount} off already built into these prices."
   }
 }
 

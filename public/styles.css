@@ -254,6 +254,21 @@ textarea::placeholder {
   font-size: 20px;
   font-family: Georgia, serif;
 }
+.save-badge {
+  display: inline-block;
+  background: #eafbf0;
+  color: #166534;
+  border: 1px solid #27ae60;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.save-badge:empty { display: none; }
 
 /* ============================================================= */
 /* Buttons                                                        */
@@ -817,19 +832,24 @@ textarea::placeholder {
 }
 .bundle-hero .price-line {
   margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 .bundle-hero .price-strike { font-size: 18px; }
 .bundle-hero .price-final { font-size: 38px; }
-.bundle-hero .save {
-  background: var(--brand-blue);
-  color: var(--paper);
-  display: inline-block;
-  padding: 4px 14px;
+.bundle-hero .save-badge {
   font-size: 13px;
-  font-weight: bold;
-  border-radius: 12px;
-  margin-left: 8px;
-  vertical-align: middle;
+  padding: 5px 14px;
+}
+.bundle-extra-save {
+  margin-top: 10px;
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--brand-dark);
 }
 
 .bundle-breakdown {
