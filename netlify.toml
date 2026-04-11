@@ -1,3 +1,14 @@
+# Llewellyn Plumbing water-report - Netlify config
+#
+# Pure static site. index.html lives at the repo root.
+#
+# IMPORTANT: leave `command` OUT entirely (do not set it to "").
+# An empty command string makes Netlify think a build ran and
+# produced no output. Omitting the key entirely tells Netlify
+# "no build, just publish this directory as-is".
+[build]
+  publish = "./"
+
 [[headers]]
   for = "/*"
   [headers.values]
