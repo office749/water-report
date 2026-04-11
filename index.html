@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Llewellyn Plumbing | Water Assessment Report Generator</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============================================================= -->
+  <!-- FORM VIEW                                                      -->
+  <!-- ============================================================= -->
+  <section id="form-view" class="view">
+    <header class="app-header no-print">
+      <img src="assets/logo.svg" alt="Llewellyn Plumbing" class="app-logo" onerror="this.src='assets/logo.png'" />
+      <div class="app-header-text">
+        <h1>Water Assessment Report Generator</h1>
+        <p>Internal tool &middot; Fill out during the customer visit</p>
+      </div>
+    </header>
+
+    <main class="form-wrap no-print">
+      <form id="assessment-form" autocomplete="off">
+
+        <fieldset>
+          <legend>Customer</legend>
+
+          <label class="field">
+            <span>Customer name</span>
+            <input type="text" id="customerName" required placeholder="Jane & John Smith" />
+          </label>
+
+          <label class="field">
+            <span>Address</span>
+            <input type="text" id="address" required placeholder="123 Main St, Spanish Fork, UT" />
+          </label>
+
+          <div class="row">
+            <label class="field">
+              <span>ZIP code</span>
+              <input type="text" id="zip" required inputmode="numeric" maxlength="5" placeholder="84660" />
+            </label>
+
+            <label class="field">
+              <span>Technician name</span>
+              <input type="text" id="techName" required placeholder="Mike L." />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Water &amp; Household</legend>
+
+          <div class="row">
+            <label class="field">
+              <span>Water hardness (GPG) <small class="hint" id="hardnessHint">auto-filled from ZIP</small></span>
+              <input type="number" id="hardness" min="0" max="100" step="1" required />
+            </label>
+
+            <label class="field">
+              <span>People in the home</span>
+              <input type="number" id="people" min="1" max="20" step="1" required value="4" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Softener loop present?</span>
+            <select id="loop" required>
+              <option value="">Select...</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Unknown">Unknown</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Water issues reported</legend>
+          <div class="checkbox-grid" id="issuesGrid"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Equipment photos <small>(optional)</small></legend>
+          <label class="field file-field">
+            <span>Upload photos of existing water heater, pipes, or softener</span>
+            <input type="file" id="photos" accept="image/*" multiple />
+            <div id="photoPreview" class="photo-preview"></div>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Tech notes <small>(optional)</small></legend>
+          <label class="field">
+            <textarea id="techNotes" rows="4" placeholder="Anything noteworthy about the install, the customer, or what you observed..."></textarea>
+          </label>
+        </fieldset>
+
+        <!-- Live sizing preview -->
+        <div id="sizingPreview" class="sizing-preview hidden">
+          <h3>Live sizing preview</h3>
+          <p class="sizing-math" id="sizingMath"></p>
+          <div class="sizing-grid">
+            <div class="sizing-card">
+              <h4>Titan VI Pro-Max</h4>
+              <div class="size-label" id="promaxSize"></div>
+              <div class="price-row">
+                <span class="price-strike" id="promaxRegular"></span>
+                <span class="price-final" id="promaxPrice"></span>
+              </div>
+            </div>
+            <div class="sizing-card">
+              <h4>Titan VI Blend</h4>
+              <div class="size-label" id="blendSize"></div>
+              <div class="price-row">
+                <span class="price-strike" id="blendRegular"></span>
+                <span class="price-final" id="blendPrice"></span>
+              </div>
+            </div>
+            <div class="sizing-card">
+              <h4>Titan VI Ultima</h4>
+              <div class="size-label" id="ultimaSize"></div>
+              <div class="price-row">
+                <span class="price-strike" id="ultimaRegular"></span>
+                <span class="price-final" id="ultimaPrice"></span>
+              </div>
+            </div>
+            <div class="sizing-card bundle-card">
+              <h4>Grand Slam Bundle</h4>
+              <div class="size-label">Ultima + RO + Salt Sensor + Check-Up</div>
+              <div class="price-row">
+                <span class="price-strike" id="bundleRegular">$3,399</span>
+                <span class="price-final" id="bundlePrice">$3,299</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="generateBtn" class="btn-primary">Generate Report</button>
+        </div>
+      </form>
+    </main>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- LOADING OVERLAY                                                -->
+  <!-- ============================================================= -->
+  <div id="loading" class="loading hidden no-print">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <p id="loadingMsg">Analyzing water chemistry...</p>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- ERROR DIALOG                                                   -->
+  <!-- ============================================================= -->
+  <div id="errorBox" class="error-box hidden no-print">
+    <div class="error-inner">
+      <h3>Could not generate report</h3>
+      <p id="errorText"></p>
+      <button type="button" id="errorClose" class="btn-primary">Try again</button>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- REPORT VIEW                                                    -->
+  <!-- ============================================================= -->
+  <section id="report-view" class="view hidden">
+    <div class="report-toolbar no-print">
+      <button type="button" id="backBtn" class="btn-secondary">&larr; Back to form</button>
+      <button type="button" id="printBtn" class="btn-primary">Print / Save PDF</button>
+    </div>
+
+    <div id="report-pages" class="report-pages"></div>
+  </section>
+
+  <script src="js/data.js"></script>
+  <script src="js/sizing.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/prompts.js"></script>
+  <script src="js/report.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
