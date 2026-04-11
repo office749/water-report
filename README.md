@@ -53,7 +53,7 @@ That's it — it's a static site with no build step.
 The front end POSTs directly to:
 
 ```
-https://water-report-production-8fed.up.railway.app/api/water-report
+https://water-report-server-production.up.railway.app/api/water-report
 ```
 
 (Configured in `js/api.js` → `API_URL`.)
@@ -151,11 +151,11 @@ ANTHROPIC_API_KEY = sk-ant-...
 ### Smoke test the proxy
 
 ```bash
-curl -i https://water-report-production-8fed.up.railway.app/
+curl -i https://water-report-server-production.up.railway.app/
 curl -i -X POST \
   -H "content-type: application/json" \
   -d '{"model":"claude-haiku-4-5-20251001","max_tokens":64,"messages":[{"role":"user","content":"Say hi in one word"}]}' \
-  https://water-report-production-8fed.up.railway.app/api/water-report
+  https://water-report-server-production.up.railway.app/api/water-report
 ```
 
 A healthy response comes back as a JSON body with a `content` array containing
