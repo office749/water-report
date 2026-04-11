@@ -26,7 +26,7 @@
 /*     { "text": "..." }                                          */
 /* ============================================================= */
 
-const API_URL = "https://water-report-server-production.up.railway.app/api/water-report";
+const API_URL = "/api/water-report"; // same-origin, served by the Node server
 const MODEL = "claude-haiku-4-5-20251001";
 
 /**

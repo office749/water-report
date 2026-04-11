@@ -1,0 +1,16 @@
+{
+  "name": "water-report",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Llewellyn Plumbing water assessment report generator - Express server serving the static frontend and proxying the Anthropic API.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
