@@ -1,13 +1,18 @@
 # Llewellyn Plumbing water-report - Netlify config
 #
-# Pure static site. index.html lives at the repo root.
+# Pure static site. index.html lives at the repo root and there is
+# no real build step.
 #
-# IMPORTANT: leave `command` OUT entirely (do not set it to "").
-# An empty command string makes Netlify think a build ran and
-# produced no output. Omitting the key entirely tells Netlify
-# "no build, just publish this directory as-is".
+# Why the explicit `command`: Netlify's deploy pipeline always runs
+# a build phase. If `command` is missing, Netlify falls back to
+# framework auto-detection and can land on a non-existent output
+# directory like public/ or dist/, producing a "successful" deploy
+# with zero files at the publish root. A trivial echo command
+# makes the build phase succeed as a no-op so `publish = "."`
+# below is actually honored.
 [build]
-  publish = "./"
+  command = "echo 'static site - no build step'"
+  publish = "."
 
 [[headers]]
   for = "/*"
