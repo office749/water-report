@@ -2,27 +2,12 @@
 /* App controller - form handlers, live preview, report trigger  */
 /* ============================================================= */
 
-const state = {
-  photos: [], // Array<{mediaType, base64, dataUrl}>
-};
-
 // ---------- Boot ----------
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
-  buildIssuesGrid();
   bindFormEvents();
   bindReportEvents();
-}
-
-function buildIssuesGrid() {
-  const grid = document.getElementById("issuesGrid");
-  grid.innerHTML = WATER_ISSUES.map((issue, i) => `
-    <label>
-      <input type="checkbox" name="issue" value="${issue}" />
-      <span>${issue}</span>
-    </label>
-  `).join("");
 }
 
 function bindFormEvents() {
@@ -49,9 +34,6 @@ function bindFormEvents() {
 
   hardnessInput.addEventListener("input", updateLivePreview);
   peopleInput.addEventListener("input", updateLivePreview);
-
-  // Photo uploads
-  document.getElementById("photos").addEventListener("change", handlePhotoChange);
 
   // Form submit
   form.addEventListener("submit", (e) => {
@@ -104,45 +86,22 @@ function updateLivePreview() {
   setCard("ultima", "ultimaSize", "ultimaRegular", "ultimaPrice");
 }
 
-// ---------- Photo handling ----------
-async function handlePhotoChange(e) {
-  const files = Array.from(e.target.files || []);
-  state.photos = [];
-  const preview = document.getElementById("photoPreview");
-  preview.innerHTML = "";
-
-  for (const f of files.slice(0, 6)) {
-    try {
-      const { mediaType, base64 } = await fileToBase64(f);
-      const dataUrl = `data:${mediaType};base64,${base64}`;
-      state.photos.push({ mediaType, base64, dataUrl });
-      const img = document.createElement("img");
-      img.src = dataUrl;
-      preview.appendChild(img);
-    } catch (err) {
-      console.error("Failed to read file", err);
-    }
-  }
-}
-
 // ---------- Generate report ----------
 async function handleGenerate() {
   const ctx = collectForm();
   if (!ctx) return;
 
-  showLoading("Analyzing water chemistry...");
+  showLoading("Analyzing local water data...");
   try {
     updateLoading("Writing your personalized report...");
     const content = await callClaudeJSON({
       systemPrompt: SYSTEM_PROMPT,
       userPrompt: buildUserPrompt(ctx),
-      images: state.photos.map((p) => ({ mediaType: p.mediaType, base64: p.base64 })),
-      maxTokens: 8000,
+      maxTokens: 10000,
     });
 
     updateLoading("Laying out the report...");
-    const photoDataUrls = state.photos.map((p) => p.dataUrl);
-    const html = renderReport(ctx, content, photoDataUrls);
+    const html = renderReport(ctx, content);
     document.getElementById("report-pages").innerHTML = html;
 
     // Swap views
@@ -172,12 +131,9 @@ function collectForm() {
     return null;
   }
 
-  const issues = Array.from(document.querySelectorAll("input[name=issue]:checked")).map((el) => el.value);
-
   return {
     customerName, address, zip, techName,
-    hardness, people, loop, issues, techNotes,
-    hasPhotos: state.photos.length > 0,
+    hardness, people, loop, techNotes,
   };
 }
 

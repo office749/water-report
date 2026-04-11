@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Llewellyn Plumbing | Water Assessment Report Generator</title>
-  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/logo.png" type="image/png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,22 +14,22 @@
   <!-- ============================================================= -->
   <section id="form-view" class="view">
     <header class="app-header no-print">
-      <img src="assets/logo.svg" alt="Llewellyn Plumbing" class="app-logo" />
+      <img src="assets/logo.png" alt="Llewellyn Plumbing" class="app-logo logo-on-white" />
       <div class="app-header-text">
         <h1>Water Assessment Report Generator</h1>
-        <p>Internal tool &middot; Fill out during the customer visit</p>
+        <p>Internal tool &middot; Pre-visit water quality report builder</p>
       </div>
     </header>
 
     <main class="form-wrap no-print">
       <form id="assessment-form" autocomplete="off">
 
-        <fieldset>
-          <legend>Customer</legend>
+        <section class="form-card">
+          <h2 class="form-card-title">Customer</h2>
 
           <label class="field">
             <span>Customer name</span>
-            <input type="text" id="customerName" required placeholder="Jane & John Smith" />
+            <input type="text" id="customerName" required placeholder="Jane &amp; John Smith" />
           </label>
 
           <label class="field">
@@ -48,10 +48,10 @@
               <input type="text" id="techName" required placeholder="Mike L." />
             </label>
           </div>
-        </fieldset>
+        </section>
 
-        <fieldset>
-          <legend>Water &amp; Household</legend>
+        <section class="form-card">
+          <h2 class="form-card-title">Water &amp; Household</h2>
 
           <div class="row">
             <label class="field">
@@ -74,28 +74,14 @@
               <option value="Unknown">Unknown</option>
             </select>
           </label>
-        </fieldset>
+        </section>
 
-        <fieldset>
-          <legend>Water issues reported</legend>
-          <div class="checkbox-grid" id="issuesGrid"></div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Equipment photos <small>(optional)</small></legend>
-          <label class="field file-field">
-            <span>Upload photos of existing water heater, pipes, or softener</span>
-            <input type="file" id="photos" accept="image/*" multiple />
-            <div id="photoPreview" class="photo-preview"></div>
-          </label>
-        </fieldset>
-
-        <fieldset>
-          <legend>Tech notes <small>(optional)</small></legend>
+        <section class="form-card">
+          <h2 class="form-card-title">Notes <small>(optional)</small></h2>
           <label class="field">
-            <textarea id="techNotes" rows="4" placeholder="Anything noteworthy about the install, the customer, or what you observed..."></textarea>
+            <textarea id="techNotes" rows="4" placeholder="Anything the customer mentioned on the phone or anything worth knowing before the visit..."></textarea>
           </label>
-        </fieldset>
+        </section>
 
         <!-- Live sizing preview -->
         <div id="sizingPreview" class="sizing-preview hidden">

@@ -57,6 +57,14 @@ h1, h2, h3, h4 { font-family: Georgia, 'Times New Roman', serif; }
   max-width: 520px;
   height: auto;
 }
+
+/* ------- Logo blend helpers ------- */
+/* The logo.png has a white background. On white surfaces, multiply
+   makes the white disappear cleanly so the logo sits flush with the
+   page. On dark backgrounds, brightness(0) invert(1) flips the whole
+   thing to pure white so the mark stays legible. */
+.logo-on-white { mix-blend-mode: multiply; }
+.logo-on-dark  { filter: brightness(0) invert(1); }
 .app-header-text {
   text-align: center;
   max-width: 680px;
@@ -84,29 +92,30 @@ h1, h2, h3, h4 { font-family: Georgia, 'Times New Roman', serif; }
   padding: 0 20px;
 }
 
-fieldset {
+.form-card {
   background: var(--paper);
   border: 1px solid var(--gray-200);
   border-top: 4px solid var(--brand-blue);
   border-radius: 8px;
-  padding: 14px 24px 22px;
+  padding: 22px 24px 24px;
   margin: 0 0 22px;
   box-shadow: var(--shadow-sm);
 }
-
-legend {
+.form-card-title {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 19px;
   color: var(--brand-dark);
-  padding: 0 10px;
   font-weight: bold;
-  margin-left: -4px;
+  margin: 0 0 14px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--gray-200);
 }
-legend small {
+.form-card-title small {
   font-weight: normal;
   color: var(--gray-500);
   font-size: 13px;
-  font-family: Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-left: 6px;
 }
 
 .field {
@@ -171,71 +180,6 @@ textarea::placeholder {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-}
-
-/* Water issue checkboxes - tappable chips */
-.checkbox-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 6px;
-}
-.checkbox-grid label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border: 1.5px solid var(--gray-200);
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  background: var(--paper);
-  transition: all 0.15s;
-  user-select: none;
-  min-height: 48px;
-}
-.checkbox-grid label:hover {
-  border-color: var(--brand-blue);
-  background: var(--brand-blue-tint);
-}
-.checkbox-grid label:has(input:checked) {
-  border-color: var(--brand-blue);
-  background: var(--brand-blue-tint);
-  color: var(--brand-dark);
-  font-weight: bold;
-}
-.checkbox-grid input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  accent-color: var(--brand-blue);
-  flex-shrink: 0;
-}
-
-/* File upload */
-.file-field input[type="file"] {
-  padding: 10px;
-  background: var(--gray-50);
-  border: 1.5px dashed var(--gray-300);
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-}
-.file-field input[type="file"]:hover {
-  border-color: var(--brand-blue);
-}
-.photo-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-}
-.photo-preview img {
-  width: 96px;
-  height: 96px;
-  object-fit: cover;
-  border: 2px solid var(--gray-200);
-  border-radius: 6px;
 }
 
 /* ============================================================= */
@@ -961,21 +905,6 @@ textarea::placeholder {
   font-weight: bold;
 }
 
-/* equipment photo thumbs on page 4 */
-.equip-photos {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin: 10px 0;
-}
-.equip-photos img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border: 1px solid var(--gray-200);
-  border-radius: 4px;
-}
-
 .loop-pill {
   display: inline-block;
   padding: 4px 12px;
@@ -1045,14 +974,13 @@ textarea::placeholder {
     padding: 0 14px;
   }
 
-  fieldset {
-    padding: 12px 16px 18px;
+  .form-card {
+    padding: 18px 16px 20px;
     margin-bottom: 18px;
   }
-  legend { font-size: 17px; }
+  .form-card-title { font-size: 17px; }
 
-  .row,
-  .checkbox-grid {
+  .row {
     grid-template-columns: 1fr;
   }
 

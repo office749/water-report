@@ -29,7 +29,7 @@ function priceBar(regular, final) {
 function pageHeader(title) {
   return `
     <div class="page-header">
-      <img src="assets/logo.svg" alt="Llewellyn Plumbing" />
+      <img src="assets/logo.png" alt="Llewellyn Plumbing" class="logo-on-white" />
       <div class="page-title">${escapeHtml(title)}</div>
     </div>
   `;
@@ -49,7 +49,7 @@ function renderCover(ctx, sizing) {
   return `
   <div class="report-page cover">
     <div class="cover-inner">
-      <img src="assets/logo.svg" alt="Llewellyn Plumbing" class="cover-logo" />
+      <img src="assets/logo.png" alt="Llewellyn Plumbing" class="cover-logo logo-on-white" />
       <h1 class="cover-title">Home Water Quality<br/>Assessment</h1>
       <div class="cover-subtitle">Personalized findings &amp; recommendations</div>
       <div class="cover-divider"></div>
@@ -76,7 +76,7 @@ function renderCover(ctx, sizing) {
         <ol>
           <li>What's in your water</li>
           <li>The cost of hard water</li>
-          <li>On-site equipment assessment</li>
+          <li>Your local water profile</li>
           <li>Titan VI Pro-Max softener</li>
           <li>Titan VI Blend softener</li>
           <li>Titan VI Ultima system</li>
@@ -136,8 +136,8 @@ function renderPage2(ctx, content) {
     </div>
 
     <div class="section">
-      <h3>Why you're noticing the issues you reported</h3>
-      <p>${escapeHtml(p.problemExplanation || "")}</p>
+      <h3>What this likely means inside your home</h3>
+      <p>${escapeHtml(p.likelyIssues || "")}</p>
     </div>
 
     ${pageFooter(ctx, 2)}
@@ -169,7 +169,7 @@ function renderPage3(ctx, content) {
   return `
   <div class="report-page">
     ${pageHeader("The cost of hard water")}
-    <h1 class="page-h1">What hard water is doing to your home</h1>
+    <h1 class="page-h1">What hard water is likely costing you</h1>
     <div class="page-h1-underline"></div>
 
     <p class="page-lead">${escapeHtml(p.intro || "")}</p>
@@ -190,35 +190,30 @@ function renderPage3(ctx, content) {
   `;
 }
 
-/* -------- Page 4: Equipment + loop assessment -------- */
-function renderPage4(ctx, content, photosDataUrls) {
+/* -------- Page 4: Local water profile + install readiness -------- */
+function renderPage4(ctx, content) {
   const p = content.page4 || {};
   const loopClass = ctx.loop === "Yes" ? "loop-yes" : ctx.loop === "No" ? "loop-no" : "loop-unknown";
 
-  const photoGrid = (photosDataUrls && photosDataUrls.length)
-    ? `<div class="equip-photos">${photosDataUrls.slice(0, 6).map((u) => `<img src="${escapeHtml(u)}" alt="Equipment photo" />`).join("")}</div>`
-    : "";
-
   return `
   <div class="report-page">
-    ${pageHeader("On-site assessment")}
-    <h1 class="page-h1">What your technician observed</h1>
+    ${pageHeader("Your area's water profile")}
+    <h1 class="page-h1">Your local water profile</h1>
     <div class="page-h1-underline"></div>
 
     <div class="section">
-      <h3>Equipment &amp; condition</h3>
-      ${photoGrid}
-      <p>${escapeHtml(p.equipmentObservation || "")}</p>
+      <h3>Water quality data for your area</h3>
+      <p>${escapeHtml(p.localWaterProfile || "")}</p>
     </div>
 
     <div class="section">
-      <h3>Softener loop status: <span class="loop-pill ${loopClass}">${escapeHtml(ctx.loop)}</span></h3>
-      <p>${escapeHtml(p.loopAssessment || "")}</p>
+      <h3>Install readiness &middot; loop status: <span class="loop-pill ${loopClass}">${escapeHtml(ctx.loop)}</span></h3>
+      <p>${escapeHtml(p.installReadiness || "")}</p>
     </div>
 
     ${ctx.techNotes ? `
     <div class="section">
-      <h3>Technician notes</h3>
+      <h3>Notes from your call</h3>
       <p>${escapeHtml(ctx.techNotes)}</p>
     </div>` : ""}
 
@@ -401,13 +396,13 @@ function renderPage9(ctx, content) {
 }
 
 /* -------- Main render -------- */
-function renderReport(ctx, content, photosDataUrls) {
+function renderReport(ctx, content) {
   const sizing = calcAllSizing(ctx.people, ctx.hardness);
   return [
     renderCover(ctx, sizing),
     renderPage2(ctx, content),
     renderPage3(ctx, content),
-    renderPage4(ctx, content, photosDataUrls),
+    renderPage4(ctx, content),
     renderSystemPage(ctx, content, "proMax", sizing, 5, "System 1 of 3"),
     renderSystemPage(ctx, content, "blend", sizing, 6, "System 2 of 3"),
     renderSystemPage(ctx, content, "ultima", sizing, 7, "System 3 of 3"),

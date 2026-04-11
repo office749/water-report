@@ -52,18 +52,6 @@ const DEFAULT_HARDNESS = 15;
 const UTAH_AVG_HARDNESS = 17;
 const US_AVG_HARDNESS = 10;
 
-// ---------- Water issue checkboxes ----------
-const WATER_ISSUES = [
-  "White scale / mineral buildup",
-  "Rust or reddish staining",
-  "Rotten egg smell",
-  "Chlorine taste or smell",
-  "Cloudy or discolored water",
-  "Dry skin or hair",
-  "Spotty dishes / glassware",
-  "Soap not lathering well",
-];
-
 // ---------- Sizes (grain) in order ----------
 const SIZES = [48, 56, 64, 70, 96];
 

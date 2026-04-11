@@ -69,6 +69,11 @@ app.post("/api/water-report", async (req, res) => {
 // Everything in ./public is served verbatim. index.html is the
 // default document for `/`. Files outside /public (server.js,
 // package.json, README, .git, node_modules) are NOT exposed.
+// We intentionally do NOT install an SPA catch-all - this app is
+// a single page that swaps views via JavaScript, so any unknown
+// URL should return a real 404 rather than the HTML shell (which
+// would otherwise get served as text/html in response to, say, a
+// missing /assets/logo.png and show up as a broken image).
 const publicDir = path.join(__dirname, "public");
 app.use(
   express.static(publicDir, {
@@ -77,13 +82,6 @@ app.use(
     maxAge: "1h",
   })
 );
-
-// SPA-style fallback: any unknown GET returns index.html. This
-// comes AFTER /api routes and express.static, so real files and
-// the API still win.
-app.get("*", (_req, res) => {
-  res.sendFile(path.join(publicDir, "index.html"));
-});
 
 // --------- Start ---------
 const port = process.env.PORT || 3000;

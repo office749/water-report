@@ -1,58 +1,27 @@
 /* ============================================================= */
 /* Backend API wrapper                                            */
 /*                                                                */
-/* Calls the Railway proxy which forwards to the Anthropic API.   */
-/* Expected server contract:                                      */
-/*                                                                */
-/*   POST <API_URL>                                               */
-/*   Content-Type: application/json                               */
-/*   Body:                                                        */
-/*     {                                                          */
-/*       "model": "claude-haiku-4-5-20251001",                    */
-/*       "max_tokens": 8000,                                      */
-/*       "system": "...",                                         */
-/*       "messages": [                                            */
-/*         {"role":"user","content":[                             */
-/*             {"type":"image","source":{...}},                   */
-/*             {"type":"text","text":"..."}                       */
-/*         ]}                                                     */
-/*       ]                                                        */
-/*     }                                                          */
-/*                                                                */
-/*   Response (same shape as Anthropic messages API):             */
-/*     { "content":[{"type":"text","text":"..."}], ... }          */
-/*                                                                */
-/* Also tolerates a minimal wrapper:                              */
-/*     { "text": "..." }                                          */
+/* Calls the server (same origin) which proxies to the Anthropic  */
+/* Messages API. Also parses a JSON response out of the model's   */
+/* reply with a progressively-more-aggressive cleanup ladder so   */
+/* preamble, markdown fences, postamble, and trailing commas      */
+/* don't break report generation.                                 */
 /* ============================================================= */
 
 const API_URL = "/api/water-report"; // same-origin, served by the Node server
 const MODEL = "claude-haiku-4-5-20251001";
 
 /**
- * Call Claude through the Railway proxy. Returns a string (the model text).
- * images: Array<{mediaType, base64}>
+ * Call Claude through the proxy. Returns the model's text content.
  */
-async function callClaude({ systemPrompt, userPrompt, images = [], maxTokens = 8000 }) {
-  const content = [];
-
-  for (const img of images) {
-    content.push({
-      type: "image",
-      source: {
-        type: "base64",
-        media_type: img.mediaType || "image/jpeg",
-        data: img.base64,
-      },
-    });
-  }
-  content.push({ type: "text", text: userPrompt });
-
+async function callClaude({ systemPrompt, userPrompt, maxTokens = 10000 }) {
   const body = {
     model: MODEL,
     max_tokens: maxTokens,
     system: systemPrompt,
-    messages: [{ role: "user", content }],
+    messages: [
+      { role: "user", content: [{ type: "text", text: userPrompt }] },
+    ],
   };
 
   const res = await fetch(API_URL, {
@@ -89,21 +58,21 @@ async function callClaude({ systemPrompt, userPrompt, images = [], maxTokens = 8
 }
 
 /**
- * Call Claude and attempt to parse the response as JSON.
+ * Call Claude and parse the response as JSON.
  *
- * Claude will occasionally add preamble ("Here is the JSON:"), markdown
- * code fences, a postamble ("Let me know if you need anything..."),
- * or trailing commas. This function tries a ladder of progressively
- * more aggressive clean-ups until one parses.
+ * Tries a ladder of cleanups in order, using the first that parses:
+ *   1. raw parse
+ *   2. trim + strip ```json / ``` fences anywhere
+ *   3. slice between first { and last } (handles preamble / postamble)
+ *   4. same as 3 + strip trailing commas
+ *   5. same as 4 + replace literal newlines inside strings with \n
+ *      (handles the rare case where the model includes a real newline
+ *      inside a string value without escaping it)
  */
 async function callClaudeJSON(opts) {
   const text = await callClaude(opts);
 
-  // Strategy 1: raw parse (ideal case)
-  // Strategy 2: trim + strip fences
-  // Strategy 3: slice between first { and last }
-  // Strategy 4: same as 3 but also strip trailing commas
-  const strategies = [
+  const attempts = [
     () => JSON.parse(String(text).trim()),
     () => JSON.parse(stripFences(String(text).trim())),
     () => {
@@ -116,29 +85,41 @@ async function callClaudeJSON(opts) {
       if (!sliced) throw new Error("no JSON object found in response");
       return JSON.parse(stripTrailingCommas(sliced));
     },
+    () => {
+      const sliced = sliceOutermostJson(stripFences(String(text)));
+      if (!sliced) throw new Error("no JSON object found in response");
+      return JSON.parse(escapeNewlinesInStrings(stripTrailingCommas(sliced)));
+    },
   ];
 
   let lastErr;
-  for (const strategy of strategies) {
+  for (let i = 0; i < attempts.length; i++) {
     try {
-      return strategy();
+      const parsed = attempts[i]();
+      if (i > 0) console.info(`JSON parser: recovered using strategy ${i + 1}`);
+      return parsed;
     } catch (err) {
       lastErr = err;
     }
   }
 
-  console.error("---- Could not parse JSON from model ----");
-  console.error("Raw response:", text);
+  // Full diagnostic dump to the console so the tech can see exactly
+  // what came back and why it failed.
+  console.error("=".repeat(60));
+  console.error("Could not parse JSON from model. Full response below:");
+  console.error(text);
   console.error("Last parse error:", lastErr && lastErr.message);
+  console.error("=".repeat(60));
 
-  const preview = String(text).slice(0, 200).replace(/\s+/g, " ");
+  const preview = String(text).slice(0, 240).replace(/\s+/g, " ").trim();
   throw new Error(
     "Model returned content that could not be parsed as JSON. " +
-    "Try again. Response started with: " + preview
+    "Click Try again. If it keeps failing, open DevTools → Console " +
+    "to see the full response. First 240 chars: " + preview
   );
 }
 
-/** Remove ```json / ``` fences anywhere in the text. */
+/** Remove ```json or ``` fences anywhere in the text. */
 function stripFences(text) {
   if (!text) return "";
   return String(text)
@@ -148,10 +129,10 @@ function stripFences(text) {
 }
 
 /**
- * Find the outermost balanced {...} block in the text and return it.
- * This handles models that wrap their JSON in preamble/postamble like:
- *   "Here is the JSON you requested:\n{...}\nLet me know if..."
- * Returns null if no {...} block is present.
+ * Return the substring between the first "{" and the last "}". This is
+ * the key recovery move for responses like:
+ *   Here is the JSON:\n{...}\n\nLet me know if you need anything else.
+ * Returns null if there's no plausible JSON object at all.
  */
 function sliceOutermostJson(text) {
   if (!text) return null;
@@ -161,29 +142,35 @@ function sliceOutermostJson(text) {
   return text.slice(first, last + 1).trim();
 }
 
-/**
- * Remove trailing commas before } or ] - a common JSON mistake from LLMs.
- * This is a naive regex but safe enough for our use case since we only
- * apply it as a last-ditch fallback.
- */
+/** Remove trailing commas before a } or ]. */
 function stripTrailingCommas(jsonText) {
   return jsonText.replace(/,(\s*[}\]])/g, "$1");
 }
 
 /**
- * Read a File -> { mediaType, base64 }
+ * Walks the text and, while inside a JSON string literal, replaces raw
+ * newlines / carriage returns with their escaped forms so JSON.parse
+ * doesn't choke. Last-ditch recovery only; leaves whitespace outside
+ * strings alone.
  */
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result || "";
-      // Result is "data:<media>;base64,<data>"
-      const match = /^data:([^;]+);base64,(.*)$/.exec(String(result));
-      if (!match) return reject(new Error("Could not read file"));
-      resolve({ mediaType: match[1], base64: match[2] });
-    };
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
+function escapeNewlinesInStrings(jsonText) {
+  let out = "";
+  let inStr = false;
+  let esc = false;
+  for (let i = 0; i < jsonText.length; i++) {
+    const c = jsonText[i];
+    if (inStr) {
+      if (esc) { out += c; esc = false; continue; }
+      if (c === "\\") { out += c; esc = true; continue; }
+      if (c === '"')  { out += c; inStr = false; continue; }
+      if (c === "\n") { out += "\\n"; continue; }
+      if (c === "\r") { out += "\\r"; continue; }
+      if (c === "\t") { out += "\\t"; continue; }
+      out += c;
+    } else {
+      if (c === '"') { out += c; inStr = true; continue; }
+      out += c;
+    }
+  }
+  return out;
 }
