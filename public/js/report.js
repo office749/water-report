@@ -71,7 +71,7 @@ function renderCover(ctx, sizing) {
     <div class="cover-inner">
       <img src="assets/logo.png" alt="Llewellyn Plumbing" class="cover-logo logo-on-white" />
       <h1 class="cover-title">Home Water Quality<br/>Assessment</h1>
-      <div class="cover-subtitle">Personalized findings &amp; recommendations</div>
+      <div class="cover-subtitle">Presented to you today by your Llewellyn Plumbing technician</div>
       <div class="cover-divider"></div>
 
       <div class="cover-customer-block">
@@ -92,16 +92,16 @@ function renderCover(ctx, sizing) {
       </div>
 
       <div class="cover-toc">
-        <h3>Inside this report</h3>
+        <h3>What we'll walk through today</h3>
         <ol>
           <li>What's in your water</li>
-          <li>The cost of hard water</li>
-          <li>Your local water profile</li>
-          <li>Titan VI Pro-Max softener</li>
-          <li>Titan VI Blend softener</li>
-          <li>Titan VI Ultima system</li>
-          <li>Grand Slam Bundle</li>
-          <li>Add-ons &amp; next steps</li>
+          <li>What hard water is costing you</li>
+          <li>What we know about your water</li>
+          <li>Option 1 &middot; Titan VI Pro-Max</li>
+          <li>Option 2 &middot; Titan VI Blend</li>
+          <li>Option 3 &middot; Titan VI Ultima</li>
+          <li>The Grand Slam Bundle</li>
+          <li>Add-ons &amp; what's next</li>
         </ol>
       </div>
 
@@ -121,7 +121,7 @@ function renderPage2(ctx, content) {
   return `
   <div class="report-page">
     ${pageHeader("What's in your water")}
-    <h1 class="page-h1">What is in your water, ${escapeHtml(firstName(ctx.customerName))}?</h1>
+    <h1 class="page-h1">Let's talk about your water, ${escapeHtml(firstName(ctx.customerName))}</h1>
     <div class="page-h1-underline"></div>
 
     <p class="page-lead">${escapeHtml(p.opening || "")}</p>
@@ -156,7 +156,7 @@ function renderPage2(ctx, content) {
     </div>
 
     <div class="section">
-      <h3>What this likely means inside your home</h3>
+      <h3>What we'd expect you to be seeing in your home</h3>
       <p>${escapeHtml(p.likelyIssues || "")}</p>
     </div>
 
@@ -189,7 +189,7 @@ function renderPage3(ctx, content) {
   return `
   <div class="report-page">
     ${pageHeader("The cost of hard water")}
-    <h1 class="page-h1">What hard water is likely costing you</h1>
+    <h1 class="page-h1">What hard water is costing your home every year</h1>
     <div class="page-h1-underline"></div>
 
     <p class="page-lead">${escapeHtml(p.intro || "")}</p>
@@ -217,23 +217,23 @@ function renderPage4(ctx, content) {
 
   return `
   <div class="report-page">
-    ${pageHeader("Your area's water profile")}
-    <h1 class="page-h1">Your local water profile</h1>
+    ${pageHeader("What we know about your water")}
+    <h1 class="page-h1">What we know about your water</h1>
     <div class="page-h1-underline"></div>
 
     <div class="section">
-      <h3>Water quality data for your area</h3>
+      <h3>Here's what the data shows us</h3>
       <p>${escapeHtml(p.localWaterProfile || "")}</p>
     </div>
 
     <div class="section">
-      <h3>Install readiness &middot; loop status: <span class="loop-pill ${loopClass}">${escapeHtml(ctx.loop)}</span></h3>
+      <h3>What install day looks like &middot; loop status: <span class="loop-pill ${loopClass}">${escapeHtml(ctx.loop)}</span></h3>
       <p>${escapeHtml(p.installReadiness || "")}</p>
     </div>
 
     ${ctx.techNotes ? `
     <div class="section">
-      <h3>Notes from your call</h3>
+      <h3>From our earlier conversation</h3>
       <p>${escapeHtml(ctx.techNotes)}</p>
     </div>` : ""}
 
@@ -264,11 +264,11 @@ function renderSystemPage(ctx, content, productKey, sizing, pageNum, eyebrow) {
 
       <div class="system-twocol">
         <div class="system-section">
-          <h3>What is in your water</h3>
+          <h3>What this handles in your water</h3>
           <p>${escapeHtml(personal.whatIsInYourWater || "")}</p>
         </div>
         <div class="system-section">
-          <h3>Why this system is right for you</h3>
+          <h3>Why we'd recommend this for your home</h3>
           <p>${escapeHtml(personal.whyRightForYou || "")}</p>
         </div>
       </div>
@@ -347,7 +347,7 @@ function renderBundlePage(ctx, content, sizing) {
     </div>
 
     <div class="section">
-      <h3>Why the bundle makes sense for you</h3>
+      <h3>Why we brought this to you today</h3>
       <p>${escapeHtml(b.personalizedReason || "")}</p>
     </div>
 
@@ -365,12 +365,12 @@ function renderPage9(ctx, content) {
 
   return `
   <div class="report-page">
-    ${pageHeader("Add-ons &amp; next steps")}
-    <h1 class="page-h1">Add-ons &amp; what life looks like next</h1>
+    ${pageHeader("Add-ons &amp; what comes next")}
+    <h1 class="page-h1">A few more things to think about</h1>
     <div class="page-h1-underline"></div>
 
     <div class="section">
-      <h3>Optional add-ons</h3>
+      <h3>Optional add-ons we can pair with any option</h3>
       <p class="page-lead">${escapeHtml(p.addOnsIntro || "")}</p>
       <div class="addon-grid">
         ${renderAddonCard(ADDONS.ozone)}
@@ -379,17 +379,17 @@ function renderPage9(ctx, content) {
     </div>
 
     <div class="section">
-      <h3>What changes after install</h3>
+      <h3>What life looks like after we install this</h3>
       <p>${escapeHtml(p.whatChanges || "")}</p>
     </div>
 
     <div class="did-you-know">
-      <h3>Did you know?</h3>
+      <h3>A few things worth knowing</h3>
       <ul>${facts}</ul>
     </div>
 
     <div class="cta-box">
-      <h3>Ready when you are, ${escapeHtml(firstName(ctx.customerName))}</h3>
+      <h3>Whenever you're ready, ${escapeHtml(firstName(ctx.customerName))}</h3>
       <p>${escapeHtml(p.callToAction || "")}</p>
       <div class="phone">${escapeHtml(COMPANY.phone)}</div>
       <small style="color:#718096;">${escapeHtml(COMPANY.name)} &middot; Spanish Fork, UT</small>
@@ -408,9 +408,9 @@ function renderReport(ctx, content) {
     renderPage2(ctx, content),
     renderPage3(ctx, content),
     renderPage4(ctx, content),
-    renderSystemPage(ctx, content, "proMax", sizing, 5, "System 1 of 3"),
-    renderSystemPage(ctx, content, "blend", sizing, 6, "System 2 of 3"),
-    renderSystemPage(ctx, content, "ultima", sizing, 7, "System 3 of 3"),
+    renderSystemPage(ctx, content, "proMax", sizing, 5, "Option 1 of 3"),
+    renderSystemPage(ctx, content, "blend", sizing, 6, "Option 2 of 3"),
+    renderSystemPage(ctx, content, "ultima", sizing, 7, "Option 3 of 3"),
     renderBundlePage(ctx, content, sizing),
     renderPage9(ctx, content),
   ].join("");
