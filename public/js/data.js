@@ -81,7 +81,7 @@ const PRODUCTS = {
   proMax: {
     key: "proMax",
     name: "Titan VI Pro-Max",
-    tagline: "Clack-valve softener that tackles hardness, iron and manganese.",
+    tagline: "Eliminates hard water. Full stop.",
     startingAt: 1850,
     prices: { 48: 1850, 56: 1925, 64: 2000, 70: 2075, 96: 2150 },
     removes: [
@@ -107,7 +107,7 @@ const PRODUCTS = {
   blend: {
     key: "blend",
     name: "Titan VI Blend",
-    tagline: "Softens water AND reduces chlorine, nitrates and arsenic in one tank.",
+    tagline: "Soft water and cleaner water in one tank.",
     startingAt: 2050,
     prices: { 48: 2050, 56: 2125, 64: 2200, 70: 2275, 96: 2275 },
     removes: [
@@ -135,7 +135,7 @@ const PRODUCTS = {
   ultima: {
     key: "ultima",
     name: "Titan VI Ultima",
-    tagline: "Full whole-home filtration + softening. The most complete option we sell.",
+    tagline: "The most complete water treatment available for your home.",
     startingAt: 2900,
     prices: { 48: 2825, 56: 2900, 64: 2975, 70: 3050, 96: 3050 },
     removes: [
@@ -173,7 +173,7 @@ const PRODUCTS = {
 //   $3,499 - $3,299 = $200 savings
 const BUNDLE = {
   name: "Grand Slam Bundle",
-  tagline: "Our most popular package deal - four pieces that work together.",
+  tagline: "Everything your home needs. One price. One install.",
   price: 3299,       // customer-facing bundle price
   listTotal: 3499,   // sum of item values if bought as part of the package
   savings: 200,      // listTotal - price

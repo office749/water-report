@@ -214,12 +214,6 @@ function renderPage2(ctx, content) {
 
     <p class="page-lead">${escapeHtml(p.opening || "")}</p>
 
-    ${statTileRow([
-      { big: ctx.hardness + " GPG", small: "Your water hardness", variant: "theirs" },
-      { big: classification, small: "Utah classification" },
-      { big: multiplier, small: "harder than US avg" },
-    ])}
-
     <div class="section">
       <h3>How your water compares</h3>
       ${hardnessCompareBar(ctx.hardness)}
@@ -235,6 +229,8 @@ function renderPage2(ctx, content) {
       <h3>What this means inside your home</h3>
       ${bulletList(p.likelyIssues, "likely-issues")}
     </div>
+
+    ${utahCallout(UTAH_FACTS.facts.slice(0, 3), "Why Utah water is so hard")}
 
     ${pageFooter(ctx, 2)}
   </div>
@@ -284,11 +280,6 @@ function renderPage3(ctx, content) {
       <div class="value">$${total.toLocaleString()}<span class="per-year">/year</span></div>
     </div>
 
-    ${utahCallout([
-      "Untreated hard water costs Utah homeowners an estimated $500-$800 every year.",
-      "Most of that is invisible: extra energy, shorter appliance life, more soap and detergent.",
-    ], "Every year it costs you more")}
-
     ${pageFooter(ctx, 3)}
   </div>
   `;
@@ -313,8 +304,6 @@ function renderPage4(ctx, content) {
       { big: escapeHtml(p.waterSourceShort || "Wasatch snowmelt"), small: "Source" },
       { big: escapeHtml(p.treatmentShort || "Municipal chlorine"), small: "Treatment" },
     ])}
-
-    ${utahCallout(UTAH_FACTS.facts.slice(0, 4), "Why Utah water is so hard")}
 
     <div class="section">
       <h3>What install day looks like &middot; loop status: <span class="loop-pill ${loopClass}">${escapeHtml(ctx.loop)}</span></h3>
@@ -466,7 +455,7 @@ function renderPage9(ctx, content) {
   const p = content.page9 || {};
   return `
   <div class="report-page">
-    ${pageHeader("Add-ons &amp; what comes next")}
+    ${pageHeader("Add-ons & what comes next")}
     <h1 class="page-h1">A few more things to think about</h1>
     <div class="page-h1-underline"></div>
 
@@ -483,8 +472,6 @@ function renderPage9(ctx, content) {
       <h3>What life looks like after we install this</h3>
       ${bulletList(p.whatChanges)}
     </div>
-
-    ${utahCallout(UTAH_FACTS.facts.slice(0, 3), "One more thing about Utah water")}
 
     <div class="cta-box">
       <h3>Whenever you're ready, ${escapeHtml(firstName(ctx.customerName))}</h3>

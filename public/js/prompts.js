@@ -104,7 +104,7 @@ SYSTEMS BEING QUOTED (sized from the demand calculation above):
 - Titan VI Pro-Max: ${sizing.systems.proMax.sizeK}K grain, final price $${sizing.systems.proMax.final.toLocaleString()} (regular $${sizing.systems.proMax.regular.toLocaleString()})
 - Titan VI Blend: ${sizing.systems.blend.sizeK}K grain, final price $${sizing.systems.blend.final.toLocaleString()} (regular $${sizing.systems.blend.regular.toLocaleString()})
 - Titan VI Ultima: ${sizing.systems.ultima.sizeK}K grain, final price $${sizing.systems.ultima.final.toLocaleString()} (regular $${sizing.systems.ultima.regular.toLocaleString()})
-- Grand Slam Bundle: Ultima + free RO + free Salt Sensor + free Annual Check-Up, final $${BUNDLE.price.toLocaleString()} (regular $${BUNDLE.regularPrice.toLocaleString()}), customer saves $${BUNDLE.youSave}.
+- Grand Slam Bundle: Ultima + RO + Salt Sensor + Annual Check-Up as a package deal. Items total $${BUNDLE.listTotal.toLocaleString()} separately, bundle price $${BUNDLE.price.toLocaleString()}, customer saves $${BUNDLE.savings}. Do NOT call any item "free" - each has a value and we show the math.
 
 REMEMBER: This is a PRE-visit report. Do NOT use observed / found / tested / inspected / walkthrough language. Use "based on your local water data" / "what we know about water in ${city}" / "at ${hardness} GPG, homes like yours typically..." language instead. Infer and state the likely water issues confidently from the hardness level; do not ask the customer about them.
 
