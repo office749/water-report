@@ -764,6 +764,68 @@ textarea::placeholder {
   text-align: center;
 }
 
+/* Side-by-side comparison table */
+.cmp-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 12px;
+}
+.cmp-table th,
+.cmp-table td {
+  padding: 8px 10px;
+  border: 1px solid var(--gray-200);
+  vertical-align: middle;
+  text-align: center;
+}
+.cmp-table th { background: var(--paper); }
+.cmp-head {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  color: var(--brand-dark);
+  font-weight: bold;
+}
+.cmp-head-best {
+  border-top: 3px solid var(--brand-blue);
+  color: var(--brand-blue);
+}
+.cmp-label {
+  text-align: left !important;
+  font-weight: bold;
+  color: var(--gray-700);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.cmp-val { font-size: 12px; line-height: 1.35; }
+.cmp-val .price-row { justify-content: center; }
+.cmp-val .price-final { font-size: 16px; }
+.cmp-val .price-strike { font-size: 11px; }
+.cmp-val .save-badge { font-size: 8px; padding: 2px 6px; }
+.cmp-yes { color: var(--ok); font-size: 16px; font-weight: bold; }
+.cmp-no  { color: var(--gray-300); font-size: 14px; }
+
+/* Mineral-teaspoon fact callout */
+.mineral-fact-callout {
+  border: 2px solid var(--brand-blue);
+  border-left-width: 6px;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--brand-dark);
+  background: var(--paper);
+}
+
+/* Urgency CTA paragraph */
+.cta-urgency {
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 6px 0 10px;
+  color: var(--gray-700);
+}
+
 /* Tight paragraphs for infographic layout */
 .section p.tight,
 .system-section p.tight {
@@ -1303,7 +1365,9 @@ textarea::placeholder {
   .page-headline,
   .punch-list li,
   .roi-box,
-  .ten-year-box {
+  .ten-year-box,
+  .cmp-table,
+  .mineral-fact-callout {
     break-inside: avoid;
     page-break-inside: avoid;
   }
@@ -1391,7 +1455,10 @@ textarea::placeholder {
   .hardness-compare,
   .compare-track,
   .roi-box,
-  .ten-year-box {
+  .ten-year-box,
+  .mineral-fact-callout,
+  .cmp-table th,
+  .cmp-table td {
     background: #fff !important;
   }
   /* Small brand-tinted pills inside the bundle breakdown and the

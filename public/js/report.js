@@ -220,6 +220,10 @@ function renderPage2(ctx, content) {
       <p class="tight">${escapeHtml(p.hardnessBlurb || "")}</p>
     </div>
 
+    <div class="mineral-fact-callout">
+      At ${ctx.hardness} GPG, your water contains roughly <strong>${ctx.hardness} teaspoons of dissolved minerals</strong> for every 1,000 gallons flowing through your pipes, appliances, and fixtures.
+    </div>
+
     <div class="section">
       <h3>Where your water comes from</h3>
       <p class="tight">${escapeHtml(p.waterSource || "")}</p>
@@ -394,7 +398,54 @@ function renderSystemPage(ctx, content, productKey, sizing, pageNum, eyebrow) {
   `;
 }
 
-/* -------- Page 8: Bundle -------- */
+/* -------- Comparison table page -------- */
+function renderComparisonPage(ctx, sizing) {
+  const row = (label, pm, bl, ul) => `
+    <tr>
+      <td class="cmp-label">${escapeHtml(label)}</td>
+      <td class="cmp-val">${pm}</td>
+      <td class="cmp-val">${bl}</td>
+      <td class="cmp-val">${ul}</td>
+    </tr>`;
+  const ck = '<span class="cmp-yes">&#10003;</span>';
+  const no = '<span class="cmp-no">&#10007;</span>';
+  const szPM = sizing.systems.proMax;
+  const szBL = sizing.systems.blend;
+  const szUL = sizing.systems.ultima;
+
+  return `
+  <div class="report-page">
+    ${pageHeader("Compare your options")}
+    <h1 class="page-h1">Side-by-side comparison</h1>
+    <div class="page-h1-underline"></div>
+
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="cmp-head">Pro-Max</th>
+          <th class="cmp-head">Blend</th>
+          <th class="cmp-head cmp-head-best">Ultima</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${row("Price", priceBar(szPM.regular, szPM.final), priceBar(szBL.regular, szBL.final), priceBar(szUL.regular, szUL.final))}
+        ${row("Grain size", szPM.sizeK + "K", szBL.sizeK + "K", szUL.sizeK + "K")}
+        ${row("Removes hardness", ck, ck, ck)}
+        ${row("Removes chlorine", no, ck, ck)}
+        ${row("Removes nitrates & arsenic", no, ck, ck)}
+        ${row("Removes PFAS & VOCs", no, no, ck)}
+        ${row("Removes chloramines", no, no, ck)}
+        ${row("Best for", "Budget-conscious<br/>homes that want<br/>softer water", "Families that want<br/>cleaner taste from<br/>every tap", "Full whole-home<br/>filtration and<br/>peace of mind")}
+      </tbody>
+    </table>
+
+    ${pageFooter(ctx, 8)}
+  </div>
+  `;
+}
+
+/* -------- Bundle page -------- */
 function renderBundlePage(ctx, content, sizing) {
   const b = content.bundle || {};
 
@@ -453,12 +504,12 @@ function renderBundlePage(ctx, content, sizing) {
       <p class="tight">${escapeHtml(b.personalizedReason || "")}</p>
     </div>
 
-    ${pageFooter(ctx, 8)}
+    ${pageFooter(ctx, 9)}
   </div>
   `;
 }
 
-/* -------- Page 9: Add-ons, what changes, CTA -------- */
+/* -------- Last page: Add-ons, what changes, CTA -------- */
 function renderPage9(ctx, content) {
   const p = content.page9 || {};
   return `
@@ -482,13 +533,13 @@ function renderPage9(ctx, content) {
     </div>
 
     <div class="cta-box">
-      <h3>Whenever you're ready, ${escapeHtml(firstName(ctx.customerName))}</h3>
-      <p class="tight">${escapeHtml(p.callToAction || "")}</p>
+      <h3>Let's get this scheduled, ${escapeHtml(firstName(ctx.customerName))}</h3>
+      <p class="cta-urgency">Every month without treated water costs your home approximately <strong>$${Math.round(totalAnnualDamage(ctx.hardness) / 12).toLocaleString()}</strong>. Today is the day to stop paying that. We are ready to schedule your installation &mdash; most jobs are completed within <strong>3-5 business days</strong> of signing.</p>
       <div class="phone">${escapeHtml(COMPANY.phone)}</div>
       <small class="cta-tagline">${escapeHtml(COMPANY.name)} &middot; Spanish Fork, UT</small>
     </div>
 
-    ${pageFooter(ctx, 9)}
+    ${pageFooter(ctx, 10)}
   </div>
   `;
 }
@@ -504,6 +555,7 @@ function renderReport(ctx, content) {
     renderSystemPage(ctx, content, "proMax", sizing, 5, "Option 1 of 3"),
     renderSystemPage(ctx, content, "blend", sizing, 6, "Option 2 of 3"),
     renderSystemPage(ctx, content, "ultima", sizing, 7, "Option 3 of 3"),
+    renderComparisonPage(ctx, sizing),
     renderBundlePage(ctx, content, sizing),
     renderPage9(ctx, content),
   ].join("");
