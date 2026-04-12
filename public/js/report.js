@@ -280,6 +280,10 @@ function renderPage3(ctx, content) {
       <div class="value">$${total.toLocaleString()}<span class="per-year">/year</span></div>
     </div>
 
+    <div class="ten-year-box">
+      Over 10 years that's <strong>$${(total * 10).toLocaleString()}</strong> in damage and waste &mdash; without a solution.
+    </div>
+
     ${pageFooter(ctx, 3)}
   </div>
   `;
@@ -379,6 +383,10 @@ function renderSystemPage(ctx, content, productKey, sizing, pageNum, eyebrow) {
       <div class="system-price-bar">
         <div class="size-note">Your price &middot; <strong>${sz.sizeK}K grain installed</strong><br/><small>$${sz.save} off already included</small></div>
         ${priceBar(sz.regular, sz.final)}
+      </div>
+
+      <div class="roi-box">
+        Based on your estimated <strong>$${totalAnnualDamage(ctx.hardness).toLocaleString()}/year</strong> in hard water costs, this system pays for itself in approximately <strong>${(sz.final / totalAnnualDamage(ctx.hardness)).toFixed(1)} years</strong>.
       </div>
     </div>
     ${pageFooter(ctx, pageNum)}
