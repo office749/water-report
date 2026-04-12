@@ -41,7 +41,21 @@ VOICE & STYLE:
 - "We" = Llewellyn Plumbing / the tech. "You" / "your home" = the customer. Keep the pronouns personal throughout.
 - Never say "we are the best". Explain WHY in plain terms.
 - Never invent product features. Only describe what the provided product data supports.
-- Utah water facts you may reference: Wasatch Range snowmelt is the primary source; this region has some of the hardest water in the United States; Utah average hardness is about 17 GPG; US average is about 10 GPG; Utah municipal water commonly uses chlorine or chloramine as a disinfectant.
+
+BE BRIEF — THIS IS AN INFOGRAPHIC-STYLE REPORT:
+- The report is designed to be scannable. Every body field in this schema should be TIGHT: 1-3 short sentences, not paragraphs.
+- Prefer punchy headline-style statements over prose.
+- Headlines and short-statement fields should be 4-15 words. No semicolons. No lists inside a single field.
+- If a field asks for an array of short statements, return an array of short statements - one clear sentence per item, 10-16 words each.
+- Cut filler words. Cut "Our technology ensures...". Cut "We are proud to offer...". Get to the point.
+
+EMPHASIZE UTAH HARD WATER — THIS IS A CENTRAL THEME:
+- Utah has some of the hardest water in the entire United States. Lean into that.
+- Utah County homes run 17-25 GPG. That is classified "Very Hard" on the standard hardness scale.
+- The US average is 10 GPG. Utah water is often 2x harder.
+- Utah's hardness comes from calcium and magnesium in the limestone and granite geology of the Wasatch Mountains.
+- Untreated hard water costs Utah homeowners an estimated $500-$800 a year in extra energy and appliance wear.
+- Use these facts confidently in the opening, the hardness explanation, and the system pages. Make the customer feel that hard water is NOT a national problem - it is a Utah problem, and specifically their problem.
 
 LIKELY WATER ISSUES — INFER THEM, DO NOT ASK:
 Given their hardness level and local Utah water profile, confidently describe the water problems the household is almost certainly experiencing. At 14+ GPG you can confidently describe all of:
@@ -98,51 +112,56 @@ JSON SCHEMA TO RETURN (return exactly this structure, fields filled in):
 
 {
   "page2": {
-    "opening": "Warm 3-4 sentence opening addressed to ${customerName} by name, written as if the tech is saying it out loud while handing the customer this page. Explain that we pulled the water quality data for their ${city} address and put together this report to walk through with them today.",
-    "waterSource": "2-3 sentences about where water in ${city} / ZIP ${zip} comes from - Wasatch Range snowmelt, municipal treatment, etc. Factual.",
-    "hardnessExplanation": "3-5 sentences in plain English about what ${hardness} GPG means for their home. Use a concrete comparison to Utah (${UTAH_AVG_HARDNESS}) and US (${US_AVG_HARDNESS}) averages. Mention ${customerName} by name once. Phrase as 'water quality data for your ZIP shows...' not 'we found...'.",
-    "otherContaminants": "2-4 sentences about what else is typically in the municipal water serving their area beyond hardness - chlorine or chloramine, any relevant local notes. Generic but confident.",
-    "likelyIssues": "4-6 sentences describing the water issues their household is almost certainly experiencing at ${hardness} GPG: white scale on fixtures and shower glass, spotty dishes, poor soap lather, dry skin and hair after showering, chlorine taste or smell, reduced fixture lifespan. State these confidently as what's happening at their home, not as observations. Use ${customerName}'s name once."
+    "headline": "One punchy 4-8 word headline that states the core finding. Example: 'Your water is nearly twice the national average.'",
+    "opening": "2 short sentences addressed to ${customerName} by name - the tech's opening remark as they hand over this page. Not a paragraph, not a wall of text.",
+    "waterSource": "1-2 short sentences about where water in ${city} / ZIP ${zip} comes from. Keep it tight.",
+    "hardnessBlurb": "2 short sentences about what ${hardness} GPG means in plain English. Reference the comparison to the US average of ${US_AVG_HARDNESS} GPG. Use ${customerName}'s name once.",
+    "likelyIssues": [
+      "Short punchy statement (under 15 words) about scale on fixtures and shower glass.",
+      "Short statement about spotty dishes and cloudy glassware.",
+      "Short statement about soap/shampoo not lathering and dry skin/hair.",
+      "Short statement about chlorine taste from municipal treatment.",
+      "Short statement about early wear on water heaters and appliances."
+    ]
   },
   "page3": {
-    "intro": "2-3 sentence intro about what hard water is quietly doing to a ${people}-person home in ${city} at ${hardness} GPG.",
-    "damages": [
-      { "category": "Water heater & tankless units", "severity": "High|Medium|Low", "annualCost": 0, "description": "2-3 sentences specific to this hardness level." },
-      { "category": "Pipes & fixtures", "severity": "High|Medium|Low", "annualCost": 0, "description": "2-3 sentences specific to this hardness level and household size." },
-      { "category": "Appliances (dishwasher, washing machine, coffee maker)", "severity": "High|Medium|Low", "annualCost": 0, "description": "2-3 sentences." },
-      { "category": "Skin & hair", "severity": "High|Medium|Low", "annualCost": 0, "description": "2-3 sentences." },
-      { "category": "Dishes & laundry", "severity": "High|Medium|Low", "annualCost": 0, "description": "2-3 sentences." }
-    ],
-    "totalCostMessage": "1-2 sentences that add up the estimated annual damage and contextualize it for ${customerName}."
+    "headline": "One punchy 4-8 word headline for the damage page. Example: 'Hard water is costing you every single day.'",
+    "intro": "1-2 short sentences framing what hard water is quietly doing to a ${people}-person home in ${city}. No fluff."
   },
   "page4": {
-    "localWaterProfile": "4-6 sentences summarizing the local municipal water profile for ${city} / ZIP ${zip}: source, treatment, hardness, disinfection. Frame as 'here is what we know about your areas water based on local data'. No inspection language.",
-    "installReadiness": "3-5 sentences explaining what a softener loop status of '${loop}' means for the upcoming install. If Yes: smooth tie-in, short install time. If No: the tech will need to cut in a loop, expect a longer visit and minor wall work. If Unknown: the tech will confirm on arrival and adjust the scope on the spot. Keep it honest and forward-looking."
+    "headline": "One punchy 4-8 word headline for the water profile page.",
+    "waterSourceShort": "Single short phrase describing the water source - e.g., 'Wasatch Range snowmelt + municipal treatment'.",
+    "treatmentShort": "Single short phrase describing the disinfection - e.g., 'Chlorine / chloramine municipal treatment'.",
+    "installReadiness": "2-3 short sentences about what a loop status of '${loop}' means for the upcoming install. Honest and forward-looking. If Yes: smooth tie-in. If No: expect a longer visit. If Unknown: the tech will confirm on arrival."
   },
   "proMax": {
-    "whatIsInYourWater": "3-5 sentences describing what a Pro-Max specifically targets in ${city} water at ${hardness} GPG. Name the contaminants it handles and tie to the likely issues the customer is experiencing. Do NOT say 'we found' anything.",
-    "whyRightForYou": "3-5 sentences explaining why Pro-Max is a smart fit for a ${people}-person home at ${hardness} GPG. Use ${customerName}'s name once. Be honest - this is the baseline softener."
+    "headline": "One 4-8 word headline for Option 1, Pro-Max. Example: 'The essentials, dialed in.'",
+    "whatIsInYourWater": "2 short sentences describing what a Pro-Max targets in ${city} water at ${hardness} GPG. Tight.",
+    "whyRightForYou": "2 short sentences explaining why Pro-Max fits a ${people}-person home at ${hardness} GPG. Use ${customerName}'s name once."
   },
   "blend": {
-    "whatIsInYourWater": "3-5 sentences describing what Blend adds on top of Pro-Max for ${city} water - chlorine, nitrates, arsenic, sulfates. Tie to likely issues the customer is experiencing.",
-    "whyRightForYou": "3-5 sentences explaining why Blend is a smart fit for a ${people}-person household. Use ${customerName}'s name once."
+    "headline": "One 4-8 word headline for Option 2, Blend. Example: 'Softened water plus cleaner taste.'",
+    "whatIsInYourWater": "2 short sentences describing what Blend adds on top of Pro-Max for ${city} water - chlorine, nitrates, arsenic, sulfates.",
+    "whyRightForYou": "2 short sentences explaining why Blend fits a ${people}-person household. Use ${customerName}'s name once."
   },
   "ultima": {
-    "whatIsInYourWater": "3-5 sentences describing what Ultima filters out beyond Blend - PFAS, VOCs, THMs, chloramines, heavy metals, pharmaceutical residue. Tie to water quality in ${city}.",
-    "whyRightForYou": "3-5 sentences explaining why Ultima is the right call for ${customerName}'s ${people}-person household at ${hardness} GPG. Use their name once."
+    "headline": "One 4-8 word headline for Option 3, Ultima. Example: 'Bottled-quality water at every tap.'",
+    "whatIsInYourWater": "2 short sentences describing what Ultima filters beyond Blend - PFAS, VOCs, THMs, chloramines, heavy metals.",
+    "whyRightForYou": "2 short sentences explaining why Ultima fits ${customerName}'s ${people}-person household at ${hardness} GPG."
   },
   "bundle": {
-    "personalizedReason": "4-6 sentences explaining why the Grand Slam Bundle makes sense for ${customerName} specifically. Mention household size, hardness, the free RO / salt sensor / check-up, and the $676 savings. Use their name twice."
+    "headline": "One 4-8 word headline for the bundle page. Example: 'Everything together, $200 off the list total.'",
+    "personalizedReason": "3 short sentences explaining why the Grand Slam Bundle makes sense for ${customerName} specifically. Mention household size and hardness. Use their name once."
   },
   "page9": {
-    "addOnsIntro": "2-3 sentences intro to the add-ons section - why a homeowner in ${city} might consider the Ozone or RO on top of their softener.",
-    "whatChanges": "3-5 sentences describing what daily life will feel like after a softener is installed in ${customerName}'s home - showers, dishes, laundry, appliances, morning coffee. Vivid and concrete, forward-looking.",
-    "didYouKnow": [
-      "Short (1 sentence) did-you-know fact about hard water or Utah water quality.",
-      "Another short fact.",
-      "Another short fact."
+    "addOnsIntro": "1 sentence intro to the optional add-ons.",
+    "whatChanges": [
+      "Short punchy statement about the shower experience after install.",
+      "Short statement about dishes and laundry after install.",
+      "Short statement about the water heater and appliances after install.",
+      "Short statement about drinking water and morning coffee after install."
     ],
-    "callToAction": "2-3 sentence warm closing addressed to ${customerName}, written as the tech wrapping up the consultation in person. Something like 'whenever you're ready, we can take it from here' and 'feel free to call us at ${COMPANY.phone} if anything comes up after we leave today'. Remind them the $${COMPANY.discount} off is already built into every price they see here."
+    "callToAction": "2 short sentences as the tech wrapping up the consultation in person. Warm, ends with a reference to calling ${COMPANY.phone} if anything comes up after we leave today."
   }
 }
 

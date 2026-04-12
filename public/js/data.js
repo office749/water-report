@@ -54,6 +54,23 @@ const DEFAULT_HARDNESS = 15;
 const UTAH_AVG_HARDNESS = 17;
 const US_AVG_HARDNESS = 10;
 
+// ---------- Utah water facts (used throughout the report) ----------
+const UTAH_FACTS = {
+  utahCountyRange: "17-25 GPG",
+  classification: "Very Hard",
+  nationalAvg: US_AVG_HARDNESS,
+  annualCostRange: "$500-$800",
+  geology: "limestone and granite runoff from the Wasatch Range",
+  rank: "among the hardest municipal water in the entire United States",
+  facts: [
+    "Utah has some of the hardest water in the entire United States.",
+    "Utah County homes typically run 17-25 GPG, classified as Very Hard.",
+    "The national average is only 10 GPG - Utah water is often 2x harder.",
+    "Utah's hardness comes from calcium and magnesium in the limestone and granite geology of the Wasatch Mountains.",
+    "Untreated hard water costs Utah homeowners an estimated $500-$800 a year in extra energy and appliance wear.",
+  ],
+};
+
 // ---------- Sizes (grain) in order ----------
 const SIZES = [48, 56, 64, 70, 96];
 
@@ -147,19 +164,26 @@ const PRODUCTS = {
 };
 
 // ---------- Bundle ----------
+// Grand Slam Bundle is sold as a package deal - a Titan VI Ultima plus
+// three companion pieces at a bulk bundle rate. The individual values
+// below are the "bundle-rate" value of each piece as it is represented
+// to the customer, and they sum exactly to BUNDLE.listTotal so the
+// savings math in the breakdown works cleanly:
+//   $2,825 + $399 + $125 + $150 = $3,499
+//   $3,499 - $3,299 = $200 savings
 const BUNDLE = {
   name: "Grand Slam Bundle",
-  tagline: "Our most popular package - the Ultima + free upgrades.",
-  price: 3299, // customer-facing final installed price
-  regularPrice: 3499, // price + COMPANY.discount ($200 off)
+  tagline: "Our most popular package deal - four pieces that work together.",
+  price: 3299,       // customer-facing bundle price
+  listTotal: 3499,   // sum of item values if bought as part of the package
+  savings: 200,      // listTotal - price
+  regularPrice: 3499, // for the top-of-page crossed-out "regular" label
   includes: [
-    { name: "Titan VI Ultima whole-home system", value: 2900, free: false },
-    { name: "Reverse Osmosis drinking water system", value: 650, free: true },
-    { name: "Salt Sensor (smart monitoring)", value: 125, free: true },
-    { name: "Annual Check-Up service", value: 200, free: true },
+    { name: "Titan VI Ultima whole-home filtration",   value: 2825 },
+    { name: "Reverse Osmosis drinking water system",    value: 399 },
+    { name: "Salt Sensor (smart brine monitoring)",     value: 125 },
+    { name: "Annual Check-Up service",                  value: 150 },
   ],
-  totalValue: 3875, // sum of list prices
-  youSave: 676,
 };
 
 // ---------- Add-ons ----------

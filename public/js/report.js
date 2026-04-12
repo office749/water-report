@@ -1,5 +1,5 @@
 /* ============================================================= */
-/* Report renderer - builds the 9-page HTML report                */
+/* Report renderer - builds the 9-page infographic report        */
 /* ============================================================= */
 
 function escapeHtml(s) {
@@ -17,6 +17,82 @@ function todayFormatted() {
   return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
 
+function firstName(fullName) {
+  if (!fullName) return "";
+  const firstWord = fullName.split(/\s|&|,/)[0];
+  return firstWord || fullName;
+}
+
+/* ---------- Infographic primitives ---------- */
+
+/** A single "big number + small label" tile. */
+function statTile(big, small, variant) {
+  return `
+    <div class="stat-tile ${variant || ""}">
+      <div class="stat-big">${escapeHtml(big)}</div>
+      <div class="stat-small">${escapeHtml(small)}</div>
+    </div>
+  `;
+}
+
+/** A row of 2-4 stat tiles. Pass an array of {big, small, variant?}. */
+function statTileRow(tiles) {
+  return `<div class="stat-row">${tiles.map((t) => statTile(t.big, t.small, t.variant)).join("")}</div>`;
+}
+
+/**
+ * Visual hardness comparison bar - three stacked rows showing
+ * US avg / Utah avg / their home, each scaled to a 25 GPG max.
+ * Pure white background, brand-blue fill, brand-blue border.
+ */
+function hardnessCompareBar(theirs) {
+  const max = 25;
+  const pct = (v) => Math.min(100, Math.round((v / max) * 100));
+  const row = (label, value, cls) => `
+    <div class="compare-row ${cls || ""}">
+      <div class="compare-label">${escapeHtml(label)}</div>
+      <div class="compare-track">
+        <div class="compare-fill" style="width:${pct(value)}%"></div>
+      </div>
+      <div class="compare-value">${value} GPG</div>
+    </div>
+  `;
+  return `
+    <div class="hardness-compare">
+      ${row("US average", US_AVG_HARDNESS, "")}
+      ${row("Utah average", UTAH_AVG_HARDNESS, "")}
+      ${row("Your home", theirs, "theirs")}
+    </div>
+  `;
+}
+
+/** A callout box with Utah hard-water facts. */
+function utahCallout(facts, title) {
+  const items = (facts || []).map((f) => `<li>${escapeHtml(f)}</li>`).join("");
+  return `
+    <div class="utah-callout">
+      <div class="utah-callout-badge">UTAH WATER FACTS</div>
+      <div class="utah-callout-title">${escapeHtml(title || "What we know about Utah water")}</div>
+      <ul class="utah-callout-list">${items}</ul>
+    </div>
+  `;
+}
+
+/** Render a page's punchy top headline (from AI) */
+function pageHeadline(text) {
+  if (!text) return "";
+  return `<div class="page-headline">${escapeHtml(text)}</div>`;
+}
+
+/** Convert an array field to punchy bullets. */
+function bulletList(items, cls) {
+  if (!Array.isArray(items) || !items.length) return "";
+  const lis = items.map((i) => `<li>${escapeHtml(i)}</li>`).join("");
+  return `<ul class="punch-list ${cls || ""}">${lis}</ul>`;
+}
+
+/* ---------- Price / addon helpers ---------- */
+
 function renderAddonCard(addon) {
   const finalPrice = addon.startingAt;
   const regular = finalPrice + COMPANY.discount;
@@ -30,7 +106,7 @@ function renderAddonCard(addon) {
         <span class="price-final">$${finalPrice.toLocaleString()}</span>
         <span class="save-badge">$${save} off</span>
       </div>
-      <small style="color:#718096;font-size:10px;display:block;margin-top:4px;">starting at &middot; installed</small>
+      <small class="addon-note">starting at &middot; installed</small>
     </div>
   `;
 }
@@ -45,6 +121,8 @@ function priceBar(regular, final) {
     </div>
   `;
 }
+
+/* ---------- Chrome ---------- */
 
 function pageHeader(title) {
   return `
@@ -66,6 +144,8 @@ function pageFooter(ctx, pageNum) {
 
 /* -------- Page 1: Cover -------- */
 function renderCover(ctx, sizing) {
+  const classification = classifyHardness(ctx.hardness);
+  const multiplier = hardnessMultiplier(ctx.hardness);
   return `
   <div class="report-page cover">
     <div class="cover-inner">
@@ -86,8 +166,12 @@ function renderCover(ctx, sizing) {
           <div class="label">Your water hardness</div>
         </div>
         <div class="cover-stat">
-          <div class="value">${ctx.people}</div>
-          <div class="label">People in the home</div>
+          <div class="value">${escapeHtml(classification)}</div>
+          <div class="label">Utah classification</div>
+        </div>
+        <div class="cover-stat">
+          <div class="value">${multiplier}</div>
+          <div class="label">harder than US average</div>
         </div>
       </div>
 
@@ -118,46 +202,38 @@ function renderCover(ctx, sizing) {
 /* -------- Page 2: What's in your water -------- */
 function renderPage2(ctx, content) {
   const p = content.page2 || {};
+  const classification = classifyHardness(ctx.hardness);
+  const multiplier = hardnessMultiplier(ctx.hardness);
+
   return `
   <div class="report-page">
     ${pageHeader("What's in your water")}
+    ${pageHeadline(p.headline || `Your water is ${multiplier} the national average.`)}
     <h1 class="page-h1">Let's talk about your water, ${escapeHtml(firstName(ctx.customerName))}</h1>
     <div class="page-h1-underline"></div>
 
     <p class="page-lead">${escapeHtml(p.opening || "")}</p>
 
+    ${statTileRow([
+      { big: ctx.hardness + " GPG", small: "Your water hardness", variant: "theirs" },
+      { big: classification, small: "Utah classification" },
+      { big: multiplier, small: "harder than US avg" },
+    ])}
+
+    <div class="section">
+      <h3>How your water compares</h3>
+      ${hardnessCompareBar(ctx.hardness)}
+      <p class="tight">${escapeHtml(p.hardnessBlurb || "")}</p>
+    </div>
+
     <div class="section">
       <h3>Where your water comes from</h3>
-      <p>${escapeHtml(p.waterSource || "")}</p>
+      <p class="tight">${escapeHtml(p.waterSource || "")}</p>
     </div>
 
     <div class="section">
-      <h3>Your hardness level: ${ctx.hardness} GPG</h3>
-      <div class="hardness-stats">
-        <div class="hardness-stat">
-          <div class="big">${US_AVG_HARDNESS} GPG</div>
-          <div class="small-label">US average</div>
-        </div>
-        <div class="hardness-stat">
-          <div class="big">${UTAH_AVG_HARDNESS} GPG</div>
-          <div class="small-label">Utah average</div>
-        </div>
-        <div class="hardness-stat theirs">
-          <div class="big">${ctx.hardness} GPG</div>
-          <div class="small-label">Your home</div>
-        </div>
-      </div>
-      <p>${escapeHtml(p.hardnessExplanation || "")}</p>
-    </div>
-
-    <div class="section">
-      <h3>What else is in your water</h3>
-      <p>${escapeHtml(p.otherContaminants || "")}</p>
-    </div>
-
-    <div class="section">
-      <h3>What we'd expect you to be seeing in your home</h3>
-      <p>${escapeHtml(p.likelyIssues || "")}</p>
+      <h3>What this means inside your home</h3>
+      ${bulletList(p.likelyIssues, "likely-issues")}
     </div>
 
     ${pageFooter(ctx, 2)}
@@ -165,23 +241,27 @@ function renderPage2(ctx, content) {
   `;
 }
 
-/* -------- Page 3: Cost of hard water -------- */
+/* -------- Page 3: Cost of hard water (computed damages) -------- */
 function renderPage3(ctx, content) {
   const p = content.page3 || {};
-  const damages = p.damages || [];
-  const total = damages.reduce((s, d) => s + (Number(d.annualCost) || 0), 0);
+  const damages = computeDamages(ctx.hardness);
+  const total = totalAnnualDamage(ctx.hardness);
 
   const rowsHtml = damages.map((d) => {
-    const sev = (d.severity || "Medium").toLowerCase();
-    const sevClass = sev === "high" ? "severity-high" : sev === "low" ? "severity-low" : "severity-medium";
+    const sev = d.severity.toLowerCase();
+    const sevClass = "severity-" + sev;
+    const barPct = sev === "high" ? 100 : sev === "medium" ? 60 : 30;
     return `
     <div class="damage-row">
-      <div>
-        <h4>${escapeHtml(d.category || "")}</h4>
-        <p>${escapeHtml(d.description || "")}</p>
+      <div class="damage-info">
+        <h4>${escapeHtml(d.category)}</h4>
+        <p>${escapeHtml(d.description)}</p>
+        <div class="severity-bar">
+          <div class="severity-bar-fill ${sevClass}" style="width:${barPct}%"></div>
+        </div>
       </div>
-      <div><span class="severity-pill ${sevClass}">${escapeHtml(d.severity || "Medium")}</span></div>
-      <div class="cost-cell">$${Number(d.annualCost || 0).toLocaleString()}/yr</div>
+      <div class="damage-sev"><span class="severity-pill ${sevClass}">${escapeHtml(d.severity)}</span></div>
+      <div class="cost-cell">$${d.annualCost.toLocaleString()}<span class="per-year">/yr</span></div>
     </div>
     `;
   }).join("");
@@ -189,6 +269,7 @@ function renderPage3(ctx, content) {
   return `
   <div class="report-page">
     ${pageHeader("The cost of hard water")}
+    ${pageHeadline(p.headline || `At ${ctx.hardness} GPG, hard water is costing your home every day.`)}
     <h1 class="page-h1">What hard water is costing your home every year</h1>
     <div class="page-h1-underline"></div>
 
@@ -200,10 +281,13 @@ function renderPage3(ctx, content) {
 
     <div class="total-cost-box">
       <div class="label">Estimated annual damage &amp; waste</div>
-      <div class="value">$${total.toLocaleString()}/year</div>
+      <div class="value">$${total.toLocaleString()}<span class="per-year">/year</span></div>
     </div>
 
-    <p class="page-lead" style="margin-top:14px;">${escapeHtml(p.totalCostMessage || "")}</p>
+    ${utahCallout([
+      "Untreated hard water costs Utah homeowners an estimated $500-$800 every year.",
+      "Most of that is invisible: extra energy, shorter appliance life, more soap and detergent.",
+    ], "Every year it costs you more")}
 
     ${pageFooter(ctx, 3)}
   </div>
@@ -214,27 +298,33 @@ function renderPage3(ctx, content) {
 function renderPage4(ctx, content) {
   const p = content.page4 || {};
   const loopClass = ctx.loop === "Yes" ? "loop-yes" : ctx.loop === "No" ? "loop-no" : "loop-unknown";
+  const classification = classifyHardness(ctx.hardness);
 
   return `
   <div class="report-page">
     ${pageHeader("What we know about your water")}
+    ${pageHeadline(p.headline || `Wasatch-fed, very hard, ready for treatment.`)}
     <h1 class="page-h1">What we know about your water</h1>
     <div class="page-h1-underline"></div>
 
-    <div class="section">
-      <h3>Here's what the data shows us</h3>
-      <p>${escapeHtml(p.localWaterProfile || "")}</p>
-    </div>
+    ${statTileRow([
+      { big: ctx.hardness + " GPG", small: "Your hardness", variant: "theirs" },
+      { big: escapeHtml(classification), small: "Utah rating" },
+      { big: escapeHtml(p.waterSourceShort || "Wasatch snowmelt"), small: "Source" },
+      { big: escapeHtml(p.treatmentShort || "Municipal chlorine"), small: "Treatment" },
+    ])}
+
+    ${utahCallout(UTAH_FACTS.facts.slice(0, 4), "Why Utah water is so hard")}
 
     <div class="section">
       <h3>What install day looks like &middot; loop status: <span class="loop-pill ${loopClass}">${escapeHtml(ctx.loop)}</span></h3>
-      <p>${escapeHtml(p.installReadiness || "")}</p>
+      <p class="tight">${escapeHtml(p.installReadiness || "")}</p>
     </div>
 
     ${ctx.techNotes ? `
     <div class="section">
       <h3>From our earlier conversation</h3>
-      <p>${escapeHtml(ctx.techNotes)}</p>
+      <p class="tight">${escapeHtml(ctx.techNotes)}</p>
     </div>` : ""}
 
     ${pageFooter(ctx, 4)}
@@ -259,17 +349,17 @@ function renderSystemPage(ctx, content, productKey, sizing, pageNum, eyebrow) {
       <div class="system-header">
         <div class="eyebrow">${escapeHtml(eyebrow)}</div>
         <h2>${escapeHtml(product.name)}</h2>
-        <div class="tagline">${escapeHtml(product.tagline)}</div>
+        <div class="tagline">${escapeHtml(personal.headline || product.tagline)}</div>
       </div>
 
       <div class="system-twocol">
         <div class="system-section">
           <h3>What this handles in your water</h3>
-          <p>${escapeHtml(personal.whatIsInYourWater || "")}</p>
+          <p class="tight">${escapeHtml(personal.whatIsInYourWater || "")}</p>
         </div>
         <div class="system-section">
           <h3>Why we'd recommend this for your home</h3>
-          <p>${escapeHtml(personal.whyRightForYou || "")}</p>
+          <p class="tight">${escapeHtml(personal.whyRightForYou || "")}</p>
         </div>
       </div>
 
@@ -311,9 +401,16 @@ function renderSystemPage(ctx, content, productKey, sizing, pageNum, eyebrow) {
 function renderBundlePage(ctx, content, sizing) {
   const b = content.bundle || {};
 
+  // Transparent line-item math. Each row shows the item's value
+  // as part of the bundle. No "FREE" labels - we charge for every
+  // piece, the savings come from buying them together.
+  const sumOfItems = BUNDLE.includes.reduce((s, i) => s + i.value, 0);
+  const bundlePrice = BUNDLE.price;
+  const savings = Math.max(0, sumOfItems - bundlePrice);
+
   const rows = BUNDLE.includes.map((inc) => `
-    <div class="row ${inc.free ? "free" : ""}">
-      <div>${escapeHtml(inc.name)}${inc.free ? " <strong style='color:#27ae60'>(FREE)</strong>" : ""}</div>
+    <div class="row">
+      <div>${escapeHtml(inc.name)}</div>
       <div class="price">$${inc.value.toLocaleString()}</div>
     </div>
   `).join("");
@@ -321,6 +418,7 @@ function renderBundlePage(ctx, content, sizing) {
   return `
   <div class="report-page">
     ${pageHeader("Grand Slam Bundle")}
+    ${pageHeadline(b.headline || `Everything together, $${savings} off the list total.`)}
     <h1 class="page-h1">The Grand Slam Bundle</h1>
     <div class="page-h1-underline"></div>
 
@@ -328,27 +426,34 @@ function renderBundlePage(ctx, content, sizing) {
       <h2>${escapeHtml(BUNDLE.name)}</h2>
       <div class="tag">${escapeHtml(BUNDLE.tagline)}</div>
       <div class="price-line">
-        <span class="price-strike">$${sizing.bundle.regular.toLocaleString()}</span>
-        <span class="price-final">$${sizing.bundle.final.toLocaleString()}</span>
-        <span class="save-badge">$${sizing.bundle.save.toLocaleString()} off</span>
+        <span class="price-strike">$${sumOfItems.toLocaleString()}</span>
+        <span class="price-final">$${bundlePrice.toLocaleString()}</span>
+        <span class="save-badge">$${savings.toLocaleString()} saved</span>
       </div>
-      <div class="bundle-extra-save">Plus $${BUNDLE.youSave.toLocaleString()} in extras when compared to buying each piece separately</div>
     </div>
 
     <div class="section">
-      <h3>What's included</h3>
+      <h3>Here's the math</h3>
       <div class="bundle-breakdown">
         ${rows}
-        <div class="row">
-          <div>Total value if purchased separately</div>
-          <div class="price">$${BUNDLE.totalValue.toLocaleString()}</div>
+        <div class="row subtotal">
+          <div>Total if purchased as separate line items</div>
+          <div class="price">$${sumOfItems.toLocaleString()}</div>
+        </div>
+        <div class="row bundle">
+          <div>Grand Slam Bundle price</div>
+          <div class="price">$${bundlePrice.toLocaleString()}</div>
+        </div>
+        <div class="row savings">
+          <div>Your savings with the bundle</div>
+          <div class="price">&minus;$${savings.toLocaleString()}</div>
         </div>
       </div>
     </div>
 
     <div class="section">
       <h3>Why we brought this to you today</h3>
-      <p>${escapeHtml(b.personalizedReason || "")}</p>
+      <p class="tight">${escapeHtml(b.personalizedReason || "")}</p>
     </div>
 
     ${pageFooter(ctx, 8)}
@@ -359,10 +464,6 @@ function renderBundlePage(ctx, content, sizing) {
 /* -------- Page 9: Add-ons, what changes, CTA -------- */
 function renderPage9(ctx, content) {
   const p = content.page9 || {};
-  const facts = (p.didYouKnow && p.didYouKnow.length)
-    ? p.didYouKnow.map((f) => `<li>${escapeHtml(f)}</li>`).join("")
-    : "";
-
   return `
   <div class="report-page">
     ${pageHeader("Add-ons &amp; what comes next")}
@@ -371,7 +472,7 @@ function renderPage9(ctx, content) {
 
     <div class="section">
       <h3>Optional add-ons we can pair with any option</h3>
-      <p class="page-lead">${escapeHtml(p.addOnsIntro || "")}</p>
+      <p class="tight">${escapeHtml(p.addOnsIntro || "")}</p>
       <div class="addon-grid">
         ${renderAddonCard(ADDONS.ozone)}
         ${renderAddonCard(ADDONS.ro)}
@@ -380,19 +481,16 @@ function renderPage9(ctx, content) {
 
     <div class="section">
       <h3>What life looks like after we install this</h3>
-      <p>${escapeHtml(p.whatChanges || "")}</p>
+      ${bulletList(p.whatChanges)}
     </div>
 
-    <div class="did-you-know">
-      <h3>A few things worth knowing</h3>
-      <ul>${facts}</ul>
-    </div>
+    ${utahCallout(UTAH_FACTS.facts.slice(0, 3), "One more thing about Utah water")}
 
     <div class="cta-box">
       <h3>Whenever you're ready, ${escapeHtml(firstName(ctx.customerName))}</h3>
-      <p>${escapeHtml(p.callToAction || "")}</p>
+      <p class="tight">${escapeHtml(p.callToAction || "")}</p>
       <div class="phone">${escapeHtml(COMPANY.phone)}</div>
-      <small style="color:#718096;">${escapeHtml(COMPANY.name)} &middot; Spanish Fork, UT</small>
+      <small class="cta-tagline">${escapeHtml(COMPANY.name)} &middot; Spanish Fork, UT</small>
     </div>
 
     ${pageFooter(ctx, 9)}
@@ -414,11 +512,4 @@ function renderReport(ctx, content) {
     renderBundlePage(ctx, content, sizing),
     renderPage9(ctx, content),
   ].join("");
-}
-
-function firstName(fullName) {
-  if (!fullName) return "";
-  // Handles "Jane & John Smith" - return "Jane" in that case
-  const firstWord = fullName.split(/\s|&|,/)[0];
-  return firstWord || fullName;
 }

@@ -54,6 +54,93 @@ function formatMoney(n) {
 }
 
 /**
+ * Classify a hardness level. Industry standard breakpoints:
+ *   0-1    Soft
+ *   1-3.5  Slightly hard
+ *   3.5-7  Moderately hard
+ *   7-10.5 Hard
+ *   10.5+  Very hard
+ * Utah County water (14-25 GPG) is solidly "Very Hard".
+ */
+function classifyHardness(h) {
+  if (h >= 11) return "Very Hard";
+  if (h >= 7)  return "Hard";
+  if (h >= 4)  return "Moderately Hard";
+  if (h >= 1)  return "Slightly Hard";
+  return "Soft";
+}
+
+/**
+ * How many times harder the customer's water is vs. the US average.
+ * Returned as a formatted string like "1.7x" for use in callouts.
+ */
+function hardnessMultiplier(h) {
+  return (h / US_AVG_HARDNESS).toFixed(1) + "x";
+}
+
+/**
+ * Compute realistic annual damage costs by category, scaled to the
+ * customer's hardness level. Numbers are tuned so that a Utah
+ * County home at 17 GPG lands inside the ranges Llewellyn uses in
+ * their sales deck:
+ *   water heater       $150-300
+ *   pipes & fixtures   $75-150
+ *   appliances         $100-200
+ *   skin & hair        $50-150
+ *   dishes & laundry   $50-100
+ * and the household total falls inside the commonly-quoted Utah
+ * hard-water cost range of $500-$800 per year.
+ */
+const DAMAGE_CATEGORIES = [
+  {
+    category: "Water heater & tankless",
+    perGpg: 13,
+    description: "Scale plates onto heating elements and the tank, cutting efficiency 20-30% and shortening the heater's life by years.",
+  },
+  {
+    category: "Pipes & fixtures",
+    perGpg: 6.5,
+    description: "Calcium narrows copper lines from the inside and chews through brass fittings and aerator screens.",
+  },
+  {
+    category: "Appliances (dishwasher, washer, coffee maker)",
+    perGpg: 9,
+    description: "Hard water steals up to a third of the service life of dishwashers, washing machines and coffee makers.",
+  },
+  {
+    category: "Skin & hair",
+    perGpg: 6,
+    description: "Calcium traps soap on skin and hair, leaving them dry and forcing extra lotion, shampoo and conditioner.",
+  },
+  {
+    category: "Dishes & laundry",
+    perGpg: 4.5,
+    description: "Spotty glassware, dingy whites, and 2x the detergent needed to get anything clean.",
+  },
+];
+
+function computeDamages(hardness) {
+  const sev =
+    hardness >= 14 ? "High" :
+    hardness >= 8  ? "Medium" : "Low";
+
+  return DAMAGE_CATEGORIES.map((c) => {
+    const raw = hardness * c.perGpg;
+    const cost = Math.round(raw / 5) * 5; // round to nearest $5
+    return {
+      category: c.category,
+      severity: sev,
+      annualCost: cost,
+      description: c.description,
+    };
+  });
+}
+
+function totalAnnualDamage(hardness) {
+  return computeDamages(hardness).reduce((s, d) => s + d.annualCost, 0);
+}
+
+/**
  * Returns { grainsNeeded, systems: {proMax|blend|ultima: {sizeK, final, regular, save}}, bundle: {final, regular, save} }
  */
 function calcAllSizing(people, hardness) {

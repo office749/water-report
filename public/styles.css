@@ -607,6 +607,220 @@ textarea::placeholder {
   margin: 4px 0;
 }
 
+/* ============================================================= */
+/* Infographic components (stat tiles, hardness bar, callouts)    */
+/* ============================================================= */
+
+/* Punchy headline under the page header, before the h1 */
+.page-headline {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--brand-blue);
+  margin: 0 0 6px;
+  letter-spacing: 0.2px;
+}
+
+/* Generic stat-tile row */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+.stat-tile {
+  border: 1.5px solid var(--gray-200);
+  border-radius: 6px;
+  padding: 12px 14px;
+  background: var(--paper);
+  text-align: center;
+}
+.stat-tile.theirs {
+  border: 2px solid var(--brand-blue);
+}
+.stat-big {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--brand-dark);
+  line-height: 1.1;
+}
+.stat-small {
+  font-size: 10px;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 4px;
+}
+
+/* Visual hardness comparison bar */
+.hardness-compare {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 12px;
+}
+.compare-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 60px;
+  gap: 10px;
+  align-items: center;
+  font-size: 11px;
+}
+.compare-label {
+  font-weight: bold;
+  color: var(--gray-700);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.compare-track {
+  height: 14px;
+  background: var(--paper);
+  border: 1.5px solid var(--gray-300);
+  border-radius: 7px;
+  overflow: hidden;
+}
+.compare-fill {
+  height: 100%;
+  background: var(--gray-300);
+  border-radius: 6px 0 0 6px;
+}
+.compare-row.theirs .compare-label {
+  color: var(--brand-dark);
+}
+.compare-row.theirs .compare-track {
+  border-color: var(--brand-blue);
+}
+.compare-row.theirs .compare-fill {
+  background: var(--brand-blue);
+}
+.compare-value {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: bold;
+  color: var(--brand-dark);
+  text-align: right;
+}
+
+/* Utah facts callout box */
+.utah-callout {
+  border: 2px solid var(--brand-blue);
+  border-left-width: 6px;
+  border-radius: 6px;
+  padding: 12px 16px 14px;
+  margin: 12px 0;
+  background: var(--paper);
+}
+.utah-callout-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1.2px;
+  color: var(--brand-blue);
+  border: 1px solid var(--brand-blue);
+  padding: 2px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.utah-callout-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--brand-dark);
+  margin: 0 0 6px;
+}
+.utah-callout-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--gray-700);
+}
+.utah-callout-list li {
+  margin: 3px 0;
+}
+
+/* Tight paragraphs for infographic layout */
+.section p.tight,
+.system-section p.tight {
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Punchy bullet list */
+.punch-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.punch-list li {
+  margin: 4px 0;
+}
+.punch-list.likely-issues li {
+  font-weight: bold;
+  color: var(--gray-700);
+}
+
+/* Severity bar under each damage row */
+.severity-bar {
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.severity-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+.severity-bar-fill.severity-high { background: var(--danger); }
+.severity-bar-fill.severity-medium { background: var(--warning); }
+.severity-bar-fill.severity-low { background: var(--ok); }
+
+/* Damage row layout refinements */
+.damage-row .damage-info p {
+  margin: 2px 0 0;
+}
+.per-year {
+  font-size: 11px;
+  color: var(--gray-500);
+  font-weight: normal;
+  margin-left: 2px;
+}
+
+/* Addon note */
+.addon-note {
+  display: block;
+  color: var(--gray-500);
+  font-size: 10px;
+  margin-top: 4px;
+}
+.cta-tagline {
+  color: var(--gray-500);
+}
+
+/* Bundle breakdown refinements */
+.bundle-breakdown .row.subtotal,
+.bundle-breakdown .row.bundle,
+.bundle-breakdown .row.savings {
+  font-weight: bold;
+}
+.bundle-breakdown .row.subtotal {
+  border-top: 2px solid var(--gray-300);
+  background: var(--gray-50);
+}
+.bundle-breakdown .row.bundle {
+  background: var(--gray-50);
+}
+.bundle-breakdown .row.savings {
+  background: var(--brand-blue-tint);
+  color: var(--brand-dark);
+}
+.bundle-breakdown .row.savings .price {
+  color: var(--brand-blue);
+}
+
 /* stats row on page 2 */
 .hardness-stats {
   display: grid;
@@ -994,25 +1208,32 @@ textarea::placeholder {
   /* Each report-page is exactly one 8.5 x 11 sheet, with 0.55in
      of internal padding that acts as the printed page margin.
      Force a page break AFTER every page so the next section
-     starts fresh, and keep the page from breaking internally. */
+     starts fresh, and also BEFORE every non-cover page so nothing
+     can slip up into the previous sheet. No max-height / overflow
+     clipping - content that legitimately fits flows naturally
+     inside 11in, and the break directives handle the rest. */
   .report-page {
     width: 8.5in;
     min-height: 11in;
-    max-height: 11in;
     margin: 0 !important;
     padding: 0.55in;
     background: #fff !important;
     box-shadow: none !important;
-    overflow: hidden;
     page-break-after: always;
+    page-break-before: always;
     page-break-inside: avoid;
     break-after: page;
+    break-before: page;
     break-inside: avoid;
     position: relative;
   }
+  .report-page:first-child,
+  .report-page.cover {
+    page-break-before: auto;
+    break-before: auto;
+  }
   .report-page.cover {
     padding: 0;            /* full-bleed cover */
-    max-height: none;
   }
   .report-page:last-child {
     page-break-after: auto;
@@ -1054,9 +1275,22 @@ textarea::placeholder {
   .system-specs,
   .system-price-bar,
   .did-you-know,
-  .section {
+  .section,
+  .stat-row,
+  .stat-tile,
+  .hardness-compare,
+  .compare-row,
+  .utah-callout,
+  .page-headline,
+  .punch-list li {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  /* Headings must not be orphaned at the bottom of a printed page */
+  h1, h2, h3, h4, .page-h1 {
+    break-after: avoid;
+    page-break-after: avoid;
   }
 
   /* -------- Font sizes: body >= 10pt, everything readable -------- */
@@ -1102,6 +1336,17 @@ textarea::placeholder {
   .save-badge { font-size: 9pt; }
   .page-header .page-title { font-size: 10pt; }
   .page-footer { font-size: 8.5pt; }
+  .page-headline { font-size: 12pt; }
+  .stat-big { font-size: 18pt; }
+  .stat-small { font-size: 8.5pt; }
+  .compare-label { font-size: 9pt; }
+  .compare-value { font-size: 11pt; }
+  .utah-callout-badge { font-size: 8pt; }
+  .utah-callout-title { font-size: 12pt; }
+  .utah-callout-list { font-size: 10pt; }
+  .punch-list { font-size: 10.5pt; }
+  .section p.tight,
+  .system-section p.tight { font-size: 10.5pt; }
 
   /* -------- Backgrounds: white only, with colored borders -------- */
 
@@ -1119,8 +1364,21 @@ textarea::placeholder {
   .addon-card,
   .hardness-stat,
   .cover-stat,
-  .cover-toc {
+  .cover-toc,
+  .stat-tile,
+  .utah-callout,
+  .hardness-compare,
+  .compare-track {
     background: #fff !important;
+  }
+  /* Small brand-tinted pills inside the bundle breakdown and the
+     brand-blue severity / compare fills keep their tint so they
+     still read as callouts in print. */
+  .bundle-breakdown .row.savings,
+  .compare-fill,
+  .severity-bar-fill {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   /* The tinted severity / loop / save pills are small decorative
      callouts - keep their tint but ensure they print as designed. */
