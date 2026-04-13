@@ -1268,7 +1268,7 @@ textarea::placeholder {
 
   @page {
     size: letter portrait;
-    margin: 0.55in;
+    margin: 0.55in 0.55in 0.55in 1in;  /* top right bottom left — extra left for 3-ring binder */
   }
 
   @page:first {
