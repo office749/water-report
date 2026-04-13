@@ -393,23 +393,21 @@ textarea::placeholder {
   background: var(--gray-100);
 }
 
-.report-page {
+.report-page,
+.report-cover {
   width: 8.5in;
   min-height: 11in;
   margin: 0 auto 24px;
   background: var(--paper);
   box-shadow: 0 4px 18px rgba(0,0,0,0.15);
-  padding: 0.55in;
   position: relative;
-  page-break-after: always;
-  page-break-inside: avoid;
-  overflow: hidden;
 }
-.report-page.cover {
+.report-page {
+  padding: 0.55in;
+}
+.report-cover {
   padding: 0;
 }
-
-.report-page:last-child { page-break-after: auto; }
 
 /* page header (small logo top right) */
 .page-header {
@@ -1255,239 +1253,106 @@ textarea::placeholder {
 /* ============================================================= */
 
 @media print {
-
-  /* Preserve our colored borders and brand accents in print.
-     Without this, most browsers strip background colors and
-     borders in print mode, which would kill our design. */
-  *, *::before, *::after {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    color-adjust: exact !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  html, body {
-    background: #fff !important;
+  body {
+    background: white;
+    font-size: 10.5pt;
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
   }
 
-  /* Anything flagged .no-print (form view, loading overlays,
-     report toolbar, etc.) must never print. */
-  .no-print { display: none !important; }
-
-  /* Zero global page margin. Our real margins are created by the
-     padding on each .report-page so we can have a full-bleed
-     cover and 0.55in-padded inner pages in the same document. */
   @page {
     size: letter portrait;
+    margin: 0.55in;
+  }
+
+  @page:first {
     margin: 0;
   }
 
-  /* Screen background / wrapper styles don't apply in print. */
-  .report-pages {
-    padding: 0 !important;
-    margin: 0 !important;
-    background: #fff !important;
+  .no-print,
+  .form-view,
+  .loading-view,
+  button,
+  nav,
+  header.app-header {
+    display: none !important;
   }
 
-  /* Each report-page is exactly one 8.5 x 11 sheet, with 0.55in
-     of internal padding that acts as the printed page margin.
-     Force a page break AFTER every page so the next section
-     starts fresh, and also BEFORE every non-cover page so nothing
-     can slip up into the previous sheet. No max-height / overflow
-     clipping - content that legitimately fits flows naturally
-     inside 11in, and the break directives handle the rest. */
-  .report-page {
-    width: 8.5in;
-    min-height: 11in;
-    margin: 0 !important;
-    padding: 0.55in;
-    background: #fff !important;
-    box-shadow: none !important;
+  .report-view {
+    display: block !important;
+  }
+
+  /* Cover page — full bleed, no margins, exactly one page */
+  .report-cover {
     page-break-after: always;
     page-break-inside: avoid;
-    break-after: page;
-    break-inside: avoid;
-    position: relative;
-  }
-  .report-page:first-child,
-  .report-page.cover {
-    padding: 0;            /* full-bleed cover */
-  }
-  .report-page:last-child {
-    page-break-after: auto;
-    break-after: auto;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
   }
 
-  /* Images never overflow their container in print. */
-  img {
-    max-width: 100%;
-    height: auto;
-  }
-  .app-logo,
-  .cover-logo {
-    max-width: 6in;
-    height: auto;
-  }
-  .page-header img {
-    height: 0.4in;
-    width: auto;
-    max-width: 3in;
+  /* Every report page section starts on a new page */
+  .report-page {
+    page-break-before: always;
+    page-break-inside: avoid;
+    page-break-after: avoid;
+    margin: 0;
+    padding: 0;
   }
 
-  /* Every major structural card must not be split across pages.
-     If a card does not fit, the browser pushes the whole block
-     to the next page rather than breaking it mid-way. */
+  /* Never split these elements across pages */
   .system-card,
-  .bundle-hero,
-  .bundle-breakdown,
-  .total-cost-box,
-  .cta-box,
-  .damage-table,
+  .bundle-card,
+  .comparison-table,
   .damage-row,
-  .hardness-stats,
-  .cover-stats,
-  .cover-toc,
   .addon-card,
-  .addon-grid,
-  .system-twocol,
-  .system-specs,
-  .system-price-bar,
-  .did-you-know,
-  .section,
   .stat-row,
-  .stat-tile,
-  .hardness-compare,
-  .compare-row,
-  .utah-callout,
-  .page-headline,
-  .punch-list li,
+  .price-box,
   .roi-box,
-  .ten-year-box,
-  .cmp-table,
-  .mineral-fact-callout {
-    break-inside: avoid;
+  .cta-box {
     page-break-inside: avoid;
   }
 
-  /* Headings must not be orphaned at the bottom of a printed page */
-  h1, h2, h3, h4, .page-h1 {
-    break-after: avoid;
+  /* Kill all blank page causes */
+  .report-page::after,
+  .report-page::before,
+  section::after,
+  section::before,
+  div::after,
+  div::before {
+    display: none !important;
+  }
+
+  /* Headings never orphaned */
+  h1, h2, h3, h4 {
     page-break-after: avoid;
+    page-break-inside: avoid;
   }
 
-  /* -------- Font sizes: body >= 10pt, everything readable -------- */
-
-  body {
-    font-size: 11pt;
-    line-height: 1.5;
-    color: #000;
-  }
-  .page-lead { font-size: 11pt; line-height: 1.55; }
-  .section p { font-size: 11pt; line-height: 1.5; }
-  .section h3 { font-size: 11pt; }
-  .page-h1 { font-size: 22pt; }
-  .cover-title { font-size: 36pt; }
-  .cover-subtitle { font-size: 14pt; }
-  .system-header h2 { font-size: 22pt; }
-  .system-header .tagline { font-size: 11pt; }
-  .system-section p { font-size: 10pt; line-height: 1.45; }
-  .system-section h3 { font-size: 10pt; }
-  .system-specs h4 { font-size: 10pt; }
-  .system-specs ul { font-size: 10pt; line-height: 1.45; }
-  .system-price-bar .price-final { font-size: 22pt; }
-  .system-price-bar .price-strike { font-size: 12pt; }
-  .bundle-hero h2 { font-size: 26pt; }
-  .bundle-hero .price-final { font-size: 34pt; }
-  .bundle-hero .price-strike { font-size: 14pt; }
-  .bundle-breakdown .row { font-size: 10pt; }
-  .bundle-breakdown .row .price { font-size: 11pt; }
-  .damage-row h4 { font-size: 11pt; }
-  .damage-row p { font-size: 10pt; line-height: 1.4; }
-  .cost-cell { font-size: 12pt; }
-  .total-cost-box .label { font-size: 12pt; }
-  .total-cost-box .value { font-size: 22pt; }
-  .addon-card h4 { font-size: 11pt; }
-  .addon-card p { font-size: 10pt; line-height: 1.45; }
-  .did-you-know ul { font-size: 10pt; line-height: 1.5; }
-  .cta-box h3 { font-size: 16pt; }
-  .cta-box p { font-size: 11pt; }
-  .cta-box .phone { font-size: 20pt; }
-  .hardness-stat .big { font-size: 22pt; }
-  .hardness-stat .small-label { font-size: 9pt; }
-  .severity-pill { font-size: 9pt; }
-  .save-badge { font-size: 9pt; }
-  .page-header .page-title { font-size: 10pt; }
-  .page-footer { font-size: 8.5pt; }
-  .page-headline { font-size: 12pt; }
-  .stat-big { font-size: 18pt; }
-  .stat-small { font-size: 8.5pt; }
-  .compare-label { font-size: 9pt; }
-  .compare-value { font-size: 11pt; }
-  .utah-callout-badge { font-size: 8pt; }
-  .utah-callout-title { font-size: 12pt; }
-  .utah-callout-list { font-size: 10pt; }
-  .punch-list { font-size: 10.5pt; }
-  .section p.tight,
-  .system-section p.tight { font-size: 10.5pt; }
-
-  /* -------- Backgrounds: white only, with colored borders -------- */
-
-  .form-card,
-  .sizing-preview,
-  .sizing-card,
-  .system-card,
-  .system-section,
-  .system-price-bar,
-  .bundle-hero,
-  .bundle-breakdown,
-  .total-cost-box,
-  .cta-box,
-  .did-you-know,
-  .addon-card,
-  .hardness-stat,
-  .cover-stat,
-  .cover-toc,
-  .stat-tile,
-  .utah-callout,
-  .hardness-compare,
-  .compare-track,
-  .roi-box,
-  .ten-year-box,
-  .mineral-fact-callout,
-  .cmp-table th,
-  .cmp-table td {
-    background: #fff !important;
-  }
-  /* Small brand-tinted pills inside the bundle breakdown and the
-     brand-blue severity / compare fills keep their tint so they
-     still read as callouts in print. */
-  .bundle-breakdown .row.savings,
-  .compare-fill,
-  .severity-bar-fill {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  /* The tinted severity / loop / save pills are small decorative
-     callouts - keep their tint but ensure they print as designed. */
-  .severity-high,
-  .severity-medium,
-  .severity-low,
-  .loop-yes,
-  .loop-no,
-  .loop-unknown,
-  .save-badge {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  /* Images */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
   }
 
-  /* Cover discount pill is now white+border, no filled ink */
-  .cover-discount {
-    background: #fff !important;
-    color: var(--brand-blue) !important;
-    border: 3px solid var(--brand-blue) !important;
+  /* Remove shadows and decorations */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Links print as plain text */
+  a {
+    text-decoration: none;
+    color: inherit;
   }
 }
 
@@ -1541,7 +1406,8 @@ textarea::placeholder {
     font-size: 14px;
   }
 
-  .report-page {
+  .report-page,
+  .report-cover {
     width: 100%;
     min-height: 0;
     padding: 24px;

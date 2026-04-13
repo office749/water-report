@@ -147,7 +147,7 @@ function renderCover(ctx, sizing) {
   const classification = classifyHardness(ctx.hardness);
   const multiplier = hardnessMultiplier(ctx.hardness);
   return `
-  <div class="report-page cover">
+  <div class="report-cover">
     <div class="cover-inner">
       <img src="assets/logo.png" alt="Llewellyn Plumbing" class="cover-logo logo-on-white" />
       <h1 class="cover-title">Home Water Quality<br/>Assessment</h1>
