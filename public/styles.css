@@ -1294,9 +1294,11 @@ textarea::placeholder {
     page-break-inside: avoid;
     margin: 0;
     padding: 0;
+    width: auto;          /* override screen 8.5in */
     min-height: 100vh;
     max-height: 100vh;
     overflow: hidden;
+    box-shadow: none;
   }
 
   /* Every report page section starts on a new page */
@@ -1306,6 +1308,10 @@ textarea::placeholder {
     page-break-after: avoid;
     margin: 0;
     padding: 0;
+    width: auto;          /* override screen 8.5in — @page handles width */
+    min-height: auto;     /* override screen 11in — this was the blank page cause */
+    max-height: none;
+    box-shadow: none;
   }
 
   /* Never split these elements across pages */
