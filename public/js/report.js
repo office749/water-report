@@ -409,6 +409,7 @@ function renderComparisonPage(ctx, sizing) {
     </tr>`;
   const ck = '<span class="cmp-yes">&#10003;</span>';
   const no = '<span class="cmp-no">&#10007;</span>';
+  const partial = (pct) => `<span class="cmp-partial">${pct}</span>`;
   const szPM = sizing.systems.proMax;
   const szBL = sizing.systems.blend;
   const szUL = sizing.systems.ultima;
@@ -432,11 +433,11 @@ function renderComparisonPage(ctx, sizing) {
         ${row("Price", priceBar(szPM.regular, szPM.final), priceBar(szBL.regular, szBL.final), priceBar(szUL.regular, szUL.final))}
         ${row("Grain size", szPM.sizeK + "K", szBL.sizeK + "K", szUL.sizeK + "K")}
         ${row("Removes hardness", ck, ck, ck)}
-        ${row("Removes chlorine", no, ck, ck)}
+        ${row("Removes chlorine", no, partial("90%"), ck)}
         ${row("Removes nitrates & arsenic", no, ck, ck)}
         ${row("Removes PFAS & VOCs", no, no, ck)}
         ${row("Removes chloramines", no, no, ck)}
-        ${row("Best for", "Budget-conscious<br/>homes that want<br/>softer water", "Families that want<br/>cleaner taste from<br/>every tap", "Full whole-home<br/>filtration and<br/>peace of mind")}
+        ${row("Best for", "Softer water on a budget", "Soft water plus cleaner taste", "Complete whole-home filtration")}
       </tbody>
     </table>
 

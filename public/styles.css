@@ -804,6 +804,16 @@ textarea::placeholder {
 .cmp-val .price-strike { font-size: 11px; }
 .cmp-val .save-badge { font-size: 8px; padding: 2px 6px; }
 .cmp-yes { color: var(--ok); font-size: 16px; font-weight: bold; }
+.cmp-partial {
+  display: inline-block;
+  color: var(--ok);
+  font-size: 12px;
+  font-weight: bold;
+  background: #eafbf0;
+  border: 1px solid var(--ok);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
 .cmp-no  { color: var(--gray-300); font-size: 14px; }
 
 /* Mineral-teaspoon fact callout */
@@ -1209,8 +1219,9 @@ textarea::placeholder {
 
 .cta-box {
   margin-top: 14px;
+  margin-bottom: 24px;
   border: 3px solid var(--brand-blue);
-  padding: 16px 20px;
+  padding: 20px 22px 22px;
   border-radius: 4px;
   text-align: center;
 }
@@ -1271,10 +1282,14 @@ textarea::placeholder {
 
   /* Force every container white so no gray bleeds into empty space */
   html,
+  body,
+  .view,
+  section,
   .report-pages,
-  .report-view,
   #report-view,
-  #report-pages {
+  #report-pages,
+  .report-page,
+  .report-cover {
     background: white !important;
   }
 
